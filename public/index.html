@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI/UX Design · Поток 7 — закрытый клуб</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ======================= AUTH GATE (вход / регистрация) ======================= -->
+<div id="auth-gate" style="display:none; position:fixed; inset:0; z-index:1000; background:radial-gradient(120% 90% at 78% 8%, rgba(232,131,90,0.08), transparent 55%), #0B0B0B; color:#F4F2EE; font-family:'Onest',sans-serif; -webkit-font-smoothing:antialiased; align-items:center; justify-content:center; overflow:auto; padding:40px 20px">
+  <div style="width:100%; max-width:400px">
+    <div style="display:flex; align-items:center; gap:11px; justify-content:center; margin-bottom:32px">
+      <span style="width:30px; height:30px; border-radius:8px; background:linear-gradient(150deg,#1d1d1d,#121212); border:1px solid rgba(255,255,255,0.09); display:flex; align-items:center; justify-content:center; font-family:'Lora',serif; font-size:16px; color:#E8835A">U</span>
+      <span style="font-size:15px; font-weight:600; letter-spacing:-0.01em">UI/UX Design</span>
+    </div>
+    <div style="border:1px solid rgba(255,255,255,0.08); border-radius:18px; background:#101010; padding:32px 30px">
+      <h1 id="auth-title" style="font-family:'Lora',serif; font-weight:500; font-size:28px; letter-spacing:-0.02em; margin:0 0 6px; color:#F7F5F1">С возвращением</h1>
+      <p id="auth-sub" style="font-size:13.5px; color:rgba(244,242,238,0.5); margin:0 0 26px">Войдите в личное пространство потока 7</p>
+
+      <form id="auth-form" style="display:flex; flex-direction:column; gap:14px">
+        <div id="auth-name-row" style="display:none; flex-direction:column; gap:7px">
+          <label style="font-size:12px; color:rgba(244,242,238,0.45)">Имя и фамилия</label>
+          <input id="auth-name" type="text" autocomplete="name" placeholder="Марк Кравцов" style="padding:12px 14px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:#0B0B0B; color:#F4F2EE; font-family:'Onest',sans-serif; font-size:14px; outline:none">
+        </div>
+        <div id="auth-role-row" style="display:none; flex-direction:column; gap:7px">
+          <label style="font-size:12px; color:rgba(244,242,238,0.45)">Роль</label>
+          <div style="display:flex; gap:8px">
+            <button type="button" data-role="student" class="auth-role is-on" style="flex:1; padding:10px; border:1px solid rgba(232,131,90,0.4); border-radius:10px; background:rgba(232,131,90,0.08); color:#F4F2EE; font-family:'Onest',sans-serif; font-size:13px; cursor:pointer">Студент</button>
+            <button type="button" data-role="mentor" class="auth-role" style="flex:1; padding:10px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:transparent; color:rgba(244,242,238,0.6); font-family:'Onest',sans-serif; font-size:13px; cursor:pointer">Наставник</button>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:7px">
+          <label style="font-size:12px; color:rgba(244,242,238,0.45)">E-mail</label>
+          <input id="auth-email" type="email" autocomplete="email" placeholder="you@club.ru" style="padding:12px 14px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:#0B0B0B; color:#F4F2EE; font-family:'Onest',sans-serif; font-size:14px; outline:none">
+        </div>
+        <div style="display:flex; flex-direction:column; gap:7px">
+          <label style="font-size:12px; color:rgba(244,242,238,0.45)">Пароль</label>
+          <input id="auth-password" type="password" autocomplete="current-password" placeholder="••••••••" style="padding:12px 14px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:#0B0B0B; color:#F4F2EE; font-family:'Onest',sans-serif; font-size:14px; outline:none">
+        </div>
+        <div id="auth-error" style="display:none; font-size:12.5px; color:#E8835A; padding:9px 12px; border-radius:9px; background:rgba(232,131,90,0.08); border:1px solid rgba(232,131,90,0.2)"></div>
+        <button id="auth-submit" type="submit" style="margin-top:4px; padding:14px; border:none; border-radius:11px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:14.5px; font-weight:600; cursor:pointer; transition:transform .15s" data-hover="transform:translateY(-2px)">Войти</button>
+      </form>
+
+      <div style="text-align:center; margin-top:20px; font-size:13px; color:rgba(244,242,238,0.45)">
+        <span id="auth-switch-text">Ещё нет аккаунта?</span>
+        <span id="auth-switch" style="color:#F4F2EE; cursor:pointer; font-weight:500">Зарегистрироваться →</span>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:18px; font-size:11.5px; color:rgba(244,242,238,0.32); line-height:1.6">
+      Демо: <span style="color:rgba(244,242,238,0.55)">student@club.ru / student123</span><br>
+      <span style="color:rgba(244,242,238,0.55)">mentor@club.ru / mentor123</span>
+    </div>
+  </div>
+</div>
+
+<!-- Тосты -->
+<div id="toast-wrap" style="position:fixed; right:24px; bottom:24px; z-index:2000; display:flex; flex-direction:column; gap:10px; pointer-events:none"></div>
+
+<!-- Мобильная верхняя панель (бургер) -->
+<div id="mobile-bar">
+  <button id="mobile-menu-btn" aria-label="Меню" style="width:36px; height:36px; border:1px solid rgba(255,255,255,0.1); border-radius:9px; background:transparent; color:#F4F2EE; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center">☰</button>
+  <span style="width:24px; height:24px; border-radius:7px; background:linear-gradient(150deg,#1d1d1d,#121212); border:1px solid rgba(255,255,255,0.09); display:flex; align-items:center; justify-content:center; font-family:'Lora',serif; font-size:13px; color:#E8835A">U</span>
+  <span style="font-size:14px; font-weight:600; color:#F4F2EE; font-family:'Onest',sans-serif">UI/UX Design</span>
+</div>
+<div id="mobile-backdrop"></div>
+
+<!-- Скрытые file-инпуты -->
+<input id="chat-file" type="file" style="display:none">
+
+<!-- Модалка (форма) -->
+<div id="modal" style="display:none; position:fixed; inset:0; z-index:1500; background:rgba(8,8,8,0.72); align-items:center; justify-content:center; padding:20px; font-family:'Onest',sans-serif; -webkit-font-smoothing:antialiased">
+  <div style="width:100%; max-width:420px; border:1px solid rgba(255,255,255,0.1); border-radius:18px; background:#101010; color:#F4F2EE; padding:28px 28px 24px">
+    <div id="modal-title" style="font-family:'Lora',serif; font-size:23px; color:#F7F5F1; margin-bottom:20px">Заголовок</div>
+    <div id="modal-body" style="display:flex; flex-direction:column; gap:14px"></div>
+    <div style="display:flex; gap:10px; margin-top:22px; justify-content:flex-end">
+      <button id="modal-cancel" style="padding:11px 18px; border:1px solid rgba(255,255,255,0.12); border-radius:10px; background:transparent; color:rgba(244,242,238,0.65); font-family:'Onest',sans-serif; font-size:13.5px; cursor:pointer">Отмена</button>
+      <button id="modal-ok" style="padding:11px 20px; border:none; border-radius:10px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:13.5px; font-weight:600; cursor:pointer">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Командная палитра (поиск ⌘K) -->
+<div id="palette" style="display:none; position:fixed; inset:0; z-index:1600; background:rgba(8,8,8,0.6); justify-content:center; align-items:flex-start; padding:120px 20px 20px; font-family:'Onest',sans-serif; -webkit-font-smoothing:antialiased">
+  <div style="width:100%; max-width:520px; border:1px solid rgba(255,255,255,0.1); border-radius:16px; background:#111111; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,0.6)">
+    <input id="palette-input" type="text" placeholder="Перейти к экрану…" autocomplete="off" style="width:100%; padding:18px 20px; border:none; border-bottom:1px solid rgba(255,255,255,0.07); background:transparent; color:#F4F2EE; font-family:'Onest',sans-serif; font-size:15px; outline:none; box-sizing:border-box">
+    <div id="palette-list" style="max-height:340px; overflow-y:auto; padding:8px"></div>
+  </div>
+</div>
+
+<div id="app" style="--accent:#E8835A; display:none; height:100vh; width:100%; background:#0B0B0B; color:#F4F2EE; font-family:'Onest',sans-serif; -webkit-font-smoothing:antialiased; overflow:hidden">
+
+  <!-- ======================= SIDEBAR ======================= -->
+  <aside id="sidebar" style="width:256px; flex:none; height:100%; display:flex; flex-direction:column; background:#0A0A0A; border-right:1px solid rgba(255,255,255,0.06); padding:16px 14px 14px">
+
+    <button data-action="logout" title="Выйти из аккаунта" style="display:flex; align-items:center; gap:11px; width:100%; padding:8px 8px; border:none; border-radius:10px; background:transparent; cursor:pointer; text-align:left" data-hover="background:rgba(255,255,255,0.04)">
+      <span style="flex:none; width:30px; height:30px; border-radius:8px; background:linear-gradient(150deg,#1d1d1d,#121212); border:1px solid rgba(255,255,255,0.09); display:flex; align-items:center; justify-content:center; font-family:'Lora',serif; font-size:16px; color:var(--accent)">U</span>
+      <span style="flex:1; min-width:0">
+        <span style="display:block; font-size:13.5px; font-weight:600; color:#F4F2EE; line-height:1.2">UI/UX Design</span>
+        <span style="display:block; font-size:11px; color:rgba(244,242,238,0.4); margin-top:1px">Поток 7 · закрытый клуб</span>
+      </span>
+      <span style="flex:none; color:rgba(244,242,238,0.3); font-size:11px">⎋</span>
+    </button>
+
+    <div data-action="search" style="display:flex; align-items:center; gap:9px; margin:14px 4px 16px; padding:7px 10px; border-radius:9px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.015); color:rgba(244,242,238,0.4); font-size:12.5px; cursor:pointer" data-hover="border-color:rgba(255,255,255,0.12)">
+      <span style="flex:1">Поиск</span>
+      <kbd style="font-family:'JetBrains Mono',monospace; font-size:10.5px; padding:2px 5px; border-radius:5px; background:rgba(255,255,255,0.05); color:rgba(244,242,238,0.5)">⌘K</kbd>
+    </div>
+
+    <nav id="nav-main" style="display:flex; flex-direction:column; gap:2px"></nav>
+
+    <div id="nav-admin-label" style="margin:20px 10px 8px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:rgba(244,242,238,0.28)">Наставник</div>
+    <nav id="nav-admin" style="display:flex; flex-direction:column; gap:2px"></nav>
+
+    <div style="flex:1"></div>
+
+    <button id="sidebar-profile" data-nav="profile" style="display:flex; align-items:center; gap:11px; width:100%; padding:9px 8px; border:none; border-radius:10px; background:transparent; cursor:pointer; text-align:left" data-hover="background:rgba(255,255,255,0.04)">
+      <span id="sidebar-init" style="flex:none; width:30px; height:30px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 7px,#1b1b1b 7px 14px); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:600; color:rgba(244,242,238,0.7)">МК</span>
+      <span style="flex:1; min-width:0">
+        <span id="sidebar-name" style="display:block; font-size:13px; font-weight:600; color:#F4F2EE">Марк Кравцов</span>
+        <span id="sidebar-sub" style="display:block; font-size:11px; color:rgba(244,242,238,0.4)">Студент · 38% курса</span>
+      </span>
+      <span style="flex:none; width:7px; height:7px; border-radius:50%; background:#8FA98C"></span>
+    </button>
+  </aside>
+
+  <main id="main" style="flex:1; height:100%; overflow-y:auto; overflow-x:hidden">
+
+    <!-- ======================= ONBOARDING ======================= -->
+    <section class="screen" data-screen="onboarding" style="position:relative; min-height:100vh; width:100%; flex-direction:column; background:radial-gradient(120% 90% at 78% 8%, rgba(232,131,90,0.07), transparent 55%), #0B0B0B">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:24px 48px; border-bottom:1px solid rgba(255,255,255,0.04)">
+        <div style="display:flex; align-items:center; gap:11px">
+          <span style="width:26px; height:26px; border-radius:7px; background:linear-gradient(150deg,#1d1d1d,#121212); border:1px solid rgba(255,255,255,0.09); display:flex; align-items:center; justify-content:center; font-family:'Lora',serif; font-size:14px; color:var(--accent)">U</span>
+          <span style="font-size:14px; font-weight:600; letter-spacing:-0.01em">UI/UX Design</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:22px; font-size:13px; color:rgba(244,242,238,0.5)">
+          <span style="cursor:pointer" data-hover="color:#F4F2EE" data-nav="course">Программа</span>
+          <span style="cursor:pointer" data-hover="color:#F4F2EE">Наставник</span>
+          <span style="cursor:pointer; color:#F4F2EE" data-nav="dashboard">Войти →</span>
+        </div>
+      </div>
+
+      <div style="flex:1; display:grid; grid-template-columns:1.05fr 0.95fr; gap:56px; align-items:center; padding:56px 48px 64px; max-width:1320px; margin:0 auto; width:100%">
+        <div style="animation:fadeUp .7s cubic-bezier(.2,.7,.2,1) both">
+          <div style="display:inline-flex; align-items:center; gap:9px; padding:6px 12px 6px 10px; border:1px solid rgba(255,255,255,0.08); border-radius:100px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.04em; color:rgba(244,242,238,0.6); margin-bottom:30px">
+            <span style="width:6px; height:6px; border-radius:50%; background:var(--accent)"></span>
+            НАБОР В ПОТОК 7 ОТКРЫТ
+          </div>
+          <h1 style="font-family:'Lora',serif; font-weight:500; font-size:64px; line-height:1.04; letter-spacing:-0.02em; margin:0 0 24px; color:#F7F5F1">Дизайнер,<br>которому доверяют<br><span style="font-style:italic; color:var(--accent)">интерфейс</span> целиком.</h1>
+          <p style="font-size:17px; line-height:1.65; color:rgba(244,242,238,0.55); max-width:440px; margin:0 0 40px">Не очередной онлайн-курс, а закрытое наставничество. Личное рабочее пространство, живая обратная связь и портфолио уровня продакт-дизайнера за 4 месяца.</p>
+          <div style="display:flex; align-items:center; gap:16px">
+            <button data-nav="dashboard" style="display:inline-flex; align-items:center; gap:10px; padding:15px 26px; border:none; border-radius:12px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:15px; font-weight:600; cursor:pointer; transition:transform .15s,box-shadow .2s" data-hover="transform:translateY(-2px); box-shadow:0 14px 40px rgba(0,0,0,0.5)">Начать обучение <span style="font-size:13px">→</span></button>
+            <button data-nav="course" style="padding:15px 22px; border:1px solid rgba(255,255,255,0.12); border-radius:12px; background:transparent; color:#F4F2EE; font-family:'Onest',sans-serif; font-size:15px; font-weight:500; cursor:pointer" data-hover="border-color:rgba(255,255,255,0.28); background:rgba(255,255,255,0.02)">Смотреть программу</button>
+          </div>
+
+          <div style="display:flex; gap:0; margin-top:52px; border-top:1px solid rgba(255,255,255,0.07); padding-top:26px">
+            <div style="flex:1; padding-right:20px">
+              <div style="font-family:'Lora',serif; font-size:34px; color:#F7F5F1; line-height:1">7</div>
+              <div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:7px">модулей программы</div>
+            </div>
+            <div style="flex:1; padding:0 20px; border-left:1px solid rgba(255,255,255,0.07)">
+              <div style="font-family:'Lora',serif; font-size:34px; color:#F7F5F1; line-height:1">64</div>
+              <div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:7px">часа практики</div>
+            </div>
+            <div style="flex:1; padding-left:20px; border-left:1px solid rgba(255,255,255,0.07)">
+              <div style="font-family:'Lora',serif; font-size:34px; color:#F7F5F1; line-height:1">4</div>
+              <div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:7px">кейса в портфолио</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="position:relative; height:520px; animation:fadeIn 1s ease both">
+          <div style="position:absolute; top:0; right:0; width:330px; height:230px; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); background:repeating-linear-gradient(135deg,#161616 0 11px,#121212 11px 22px); box-shadow:0 30px 80px rgba(0,0,0,0.5)">
+            <div style="position:absolute; inset:0; display:flex; align-items:flex-end; padding:16px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.4)">// превью урока · 16:9</span></div>
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:46px; height:46px; border-radius:50%; background:rgba(244,242,238,0.92); display:flex; align-items:center; justify-content:center"><span style="border-left:12px solid #0B0B0B; border-top:8px solid transparent; border-bottom:8px solid transparent; margin-left:3px"></span></div>
+          </div>
+          <div style="position:absolute; top:200px; left:0; width:270px; padding:20px; border-radius:16px; border:1px solid rgba(255,255,255,0.08); background:#121212; box-shadow:0 30px 70px rgba(0,0,0,0.45)">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--accent); letter-spacing:0.06em">МОДУЛЬ 03 · В ПРОЦЕССЕ</div>
+            <div style="font-family:'Lora',serif; font-size:21px; margin:10px 0 14px; color:#F7F5F1">Цвет и контраст</div>
+            <div style="display:flex; gap:4px">
+              <span style="flex:1; height:4px; border-radius:3px; background:var(--accent)"></span>
+              <span style="flex:1; height:4px; border-radius:3px; background:var(--accent)"></span>
+              <span style="flex:0.5; height:4px; border-radius:3px; background:rgba(232,131,90,0.45)"></span>
+              <span style="flex:1; height:4px; border-radius:3px; background:rgba(255,255,255,0.08)"></span>
+              <span style="flex:1; height:4px; border-radius:3px; background:rgba(255,255,255,0.08)"></span>
+            </div>
+            <div style="font-size:12px; color:rgba(244,242,238,0.45); margin-top:12px">Урок 2 из 7 · осталось ~50 минут</div>
+          </div>
+          <div style="position:absolute; bottom:6px; right:18px; display:flex; align-items:center; gap:10px; padding:13px 16px; border-radius:13px; border:1px solid rgba(255,255,255,0.08); background:#121212; box-shadow:0 20px 50px rgba(0,0,0,0.45)">
+            <span style="width:34px; height:34px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 6px,#1b1b1b 6px 12px); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:rgba(244,242,238,0.7)">АС</span>
+            <span>
+              <span style="display:block; font-size:12.5px; font-weight:600">Артём Северов</span>
+              <span style="display:block; font-size:11px; color:rgba(244,242,238,0.45)">ваш наставник · online</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= DASHBOARD ======================= -->
+    <section class="screen" data-screen="dashboard" style="padding:46px 56px 60px; max-width:1280px; margin:0 auto; animation:fadeIn .4s ease both">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:38px">
+        <div>
+          <div id="dash-date" style="font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:12px"></div>
+          <h1 style="font-family:'Lora',serif; font-weight:500; font-size:40px; letter-spacing:-0.02em; margin:0; color:#F7F5F1">С возвращением, <span style="font-style:italic" id="dash-name"></span></h1>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; padding:9px 14px; border-radius:100px; border:1px solid rgba(255,255,255,0.08); font-size:13px; color:rgba(244,242,238,0.6)">
+          <span style="width:7px; height:7px; border-radius:50%; background:var(--accent)"></span><span id="dash-streak">0</span> дней подряд
+        </div>
+      </div>
+
+      <div class="grid-bento" style="display:grid; grid-template-columns:repeat(12,1fr); gap:18px">
+
+        <div style="grid-column:span 7; grid-row:span 2; border-radius:18px; border:1px solid rgba(255,255,255,0.07); background:#111111; padding:30px 32px; display:flex; flex-direction:column">
+          <div style="display:flex; align-items:center; justify-content:space-between">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">ПРОГРЕСС КУРСА</span>
+            <span id="dash-module-of" style="font-size:12.5px; color:rgba(244,242,238,0.45)">—</span>
+          </div>
+          <div style="display:flex; align-items:flex-end; gap:16px; margin:26px 0 4px">
+            <span style="font-family:'Lora',serif; font-size:76px; line-height:0.9; color:#F7F5F1; letter-spacing:-0.02em"><span id="dash-pct">0</span><span style="font-size:34px; color:rgba(244,242,238,0.4)">%</span></span>
+            <span style="font-size:14px; color:rgba(244,242,238,0.5); padding-bottom:12px">пройдено программы</span>
+          </div>
+          <div id="dash-segments" style="display:flex; gap:5px; margin-top:24px"></div>
+          <div style="flex:1"></div>
+          <div style="display:flex; gap:36px; margin-top:30px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.06)">
+            <div><div style="font-family:'Lora',serif; font-size:26px; color:#F7F5F1"><span id="dash-lessons">0</span><span style="font-size:16px; color:rgba(244,242,238,0.35)">/<span id="dash-lessons-total">0</span></span></div><div style="font-size:12px; color:rgba(244,242,238,0.45); margin-top:5px">уроков пройдено</div></div>
+            <div><div style="font-family:'Lora',serif; font-size:26px; color:#F7F5F1" id="dash-hours">—</div><div style="font-size:12px; color:rgba(244,242,238,0.45); margin-top:5px">в обучении</div></div>
+            <div><div style="font-family:'Lora',serif; font-size:26px; color:#F7F5F1" id="dash-avg">—</div><div style="font-size:12px; color:rgba(244,242,238,0.45); margin-top:5px">средний балл</div></div>
+          </div>
+        </div>
+
+        <div data-action="open-current-lesson" style="grid-column:span 5; border-radius:16px; border:1px solid rgba(255,255,255,0.07); background:#111111; overflow:hidden; cursor:pointer; display:flex; flex-direction:column; transition:border-color .2s,transform .2s" data-hover="border-color:rgba(255,255,255,0.16); transform:translateY(-2px)">
+          <div style="position:relative; height:148px; background:repeating-linear-gradient(135deg,#161616 0 11px,#121212 11px 22px); border-bottom:1px solid rgba(255,255,255,0.06)">
+            <div style="position:absolute; top:14px; left:16px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--accent)">▸ ПРОДОЛЖИТЬ</div>
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:44px; height:44px; border-radius:50%; background:rgba(244,242,238,0.92); display:flex; align-items:center; justify-content:center"><span style="border-left:12px solid #0B0B0B; border-top:8px solid transparent; border-bottom:8px solid transparent; margin-left:3px"></span></div>
+          </div>
+          <div style="padding:20px 22px">
+            <div id="dash-next-meta" style="font-size:12px; color:rgba(244,242,238,0.4); margin-bottom:7px">Модуль 3 · Урок 2</div>
+            <div id="dash-next-title" style="font-family:'Lora',serif; font-size:21px; color:#F7F5F1; line-height:1.25">Цветовые системы в интерфейсах</div>
+            <div id="dash-next-dur" style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:10px">14 минут · видео + разбор</div>
+          </div>
+        </div>
+
+        <div style="grid-column:span 5; border-radius:16px; border:1px solid rgba(255,255,255,0.07); background:linear-gradient(160deg,#15110f,#111111); padding:24px; display:flex; flex-direction:column; justify-content:space-between">
+          <div>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">БЛИЖАЙШИЙ СОЗВОН</span>
+            <div style="font-family:'Lora',serif; font-size:23px; color:#F7F5F1; margin:14px 0 6px">Чт, 21 июня · 19:00</div>
+            <div style="font-size:13px; color:rgba(244,242,238,0.5)">Групповой разбор домашних работ</div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:22px">
+            <div style="display:flex; align-items:center; gap:9px">
+              <span id="dash-call-init" style="width:26px; height:26px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 6px,#1b1b1b 6px 12px); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:rgba(244,242,238,0.7)">—</span>
+              <span id="dash-call-name" style="font-size:12.5px; color:rgba(244,242,238,0.6)">наставник</span>
+            </div>
+            <button data-action="join-call" style="padding:8px 16px; border:1px solid rgba(255,255,255,0.14); border-radius:9px; background:transparent; color:#F4F2EE; font-family:'Onest',sans-serif; font-size:13px; font-weight:500; cursor:pointer" data-hover="background:rgba(255,255,255,0.05)">Подключиться</button>
+          </div>
+        </div>
+
+        <div style="grid-column:span 7; border-radius:16px; border:1px solid rgba(255,255,255,0.07); background:#111111; padding:26px 28px">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">ОБРАТНАЯ СВЯЗЬ НАСТАВНИКА</span>
+            <span data-nav="review" style="font-size:12.5px; color:rgba(244,242,238,0.5); cursor:pointer" data-hover="color:#F4F2EE">все →</span>
+          </div>
+          <div id="dash-comments" style="display:flex; flex-direction:column; gap:18px"></div>
+        </div>
+
+        <div data-nav="portfolio" style="grid-column:span 5; border-radius:16px; border:1px solid rgba(255,255,255,0.07); background:#111111; padding:26px 28px; cursor:pointer; display:flex; flex-direction:column; justify-content:space-between" data-hover="border-color:rgba(255,255,255,0.16)">
+          <div style="display:flex; align-items:center; justify-content:space-between">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">ПОРТФОЛИО</span>
+            <span style="font-size:12.5px; color:rgba(244,242,238,0.5)">→</span>
+          </div>
+          <div id="dash-portfolio-thumbs" style="display:flex; gap:9px; margin:22px 0"></div>
+          <div id="dash-portfolio-text" style="font-size:13px; color:rgba(244,242,238,0.5)">—</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================= COURSE / ROADMAP ======================= -->
+    <section class="screen" data-screen="course" style="padding:46px 56px 80px; max-width:1180px; margin:0 auto; animation:fadeIn .4s ease both">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:54px">
+        <div style="max-width:560px">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.06em; color:var(--accent); margin-bottom:16px">ПРОГРАММА · ПОТОК 7</div>
+          <h1 style="font-family:'Lora',serif; font-weight:500; font-size:46px; line-height:1.08; letter-spacing:-0.02em; margin:0 0 16px; color:#F7F5F1">Дорожная карта <span style="font-style:italic">дизайнера</span></h1>
+          <p id="course-subhead" style="font-size:15.5px; line-height:1.6; color:rgba(244,242,238,0.5); margin:0">Программа обучения — модуль за модулем, от основ к системному мышлению.</p>
+        </div>
+        <div style="text-align:right; flex:none">
+          <div style="font-family:'Lora',serif; font-size:44px; color:#F7F5F1; line-height:1"><span id="course-done">0</span><span style="color:rgba(244,242,238,0.3)">/<span id="course-total">0</span></span></div>
+          <div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:6px">модулей завершено</div>
+        </div>
+      </div>
+
+      <div style="position:relative">
+        <div style="position:absolute; left:23px; top:14px; bottom:24px; width:1.5px; background:linear-gradient(180deg, rgba(143,169,140,0.5), var(--accent) 32%, rgba(255,255,255,0.08) 46%)"></div>
+        <div id="course-modules" style="display:flex; flex-direction:column; gap:14px"></div>
+      </div>
+    </section>
+
+    <!-- ======================= LESSON ======================= -->
+    <section class="screen" data-screen="lesson" style="padding:34px 0 80px; animation:fadeIn .4s ease both">
+      <div class="split" style="display:flex; gap:48px; max-width:1240px; margin:0 auto; padding:0 56px; align-items:flex-start">
+
+        <div class="main" style="flex:1; min-width:0; max-width:720px">
+          <div style="display:flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:rgba(244,242,238,0.42); margin-bottom:22px">
+            <span id="lesson-bc-module" style="cursor:pointer" data-hover="color:#F4F2EE" data-nav="course">Модуль</span><span>/</span><span id="lesson-bc-lesson" style="color:var(--accent)">Урок</span>
+          </div>
+
+          <div id="player" style="position:relative; aspect-ratio:16/9; width:100%; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); background:repeating-linear-gradient(135deg,#161616 0 13px,#111111 13px 26px)">
+            <div id="player-label" style="position:absolute; top:16px; left:18px; font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.4)">// видео урока · 16:9</div>
+            <div id="player-novideo" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; font-size:13px; color:rgba(244,242,238,0.4)">Видео к этому уроку не приложено</div>
+            <div id="player-bigplay" data-action="player-toggle" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:62px; height:62px; border-radius:50%; background:rgba(244,242,238,0.94); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform .2s" data-hover="transform:translate(-50%,-50%) scale(1.07)"><span id="player-bigicon" style="border-left:17px solid #0B0B0B; border-top:11px solid transparent; border-bottom:11px solid transparent; margin-left:4px"></span></div>
+            <div id="player-controls" style="position:absolute; left:0; right:0; bottom:0; padding:16px 18px; background:linear-gradient(0deg, rgba(0,0,0,0.6), transparent)">
+              <div id="player-track" data-action="player-seek" style="height:3px; border-radius:3px; background:rgba(255,255,255,0.18); position:relative; cursor:pointer"><span id="player-fill" style="position:absolute; left:0; top:0; bottom:0; width:32%; background:var(--accent); border-radius:3px"></span><span id="player-handle" style="position:absolute; left:32%; top:50%; width:11px; height:11px; margin:-5.5px 0 0 -5px; border-radius:50%; background:#F4F2EE"></span></div>
+              <div style="display:flex; align-items:center; gap:16px; margin-top:11px; color:rgba(244,242,238,0.85)">
+                <span id="player-state" data-action="player-toggle" style="font-size:13px; cursor:pointer">▶</span>
+                <span id="player-time" style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:rgba(244,242,238,0.65)">00:00 / 14:08</span>
+                <span style="flex:1"></span>
+                <span id="player-speed" data-action="player-speed" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.55); border:1px solid rgba(255,255,255,0.16); padding:2px 7px; border-radius:6px; cursor:pointer">1.0×</span>
+                <span data-action="player-fs" style="font-size:13px; color:rgba(244,242,238,0.6); cursor:pointer">⤢</span>
+              </div>
+            </div>
+          </div>
+
+          <h1 id="lesson-title" style="font-family:'Lora',serif; font-weight:500; font-size:38px; line-height:1.12; letter-spacing:-0.02em; margin:30px 0 0; color:#F7F5F1">Урок</h1>
+          <div style="display:flex; align-items:center; gap:16px; margin:18px 0 36px; font-size:13px; color:rgba(244,242,238,0.45)">
+            <span style="display:flex; align-items:center; gap:8px"><span id="lesson-mentor-init" style="width:22px; height:22px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 5px,#1b1b1b 5px 10px); border:1px solid rgba(255,255,255,0.1); display:inline-flex; align-items:center; justify-content:center; font-size:9px; font-weight:600; color:rgba(244,242,238,0.7)">—</span><span id="lesson-mentor-name">наставник</span></span>
+            <span style="width:3px; height:3px; border-radius:50%; background:rgba(244,242,238,0.3)"></span>
+            <span id="lesson-dur">— мин</span>
+          </div>
+
+          <div id="lesson-body" style="font-size:16.5px; line-height:1.75; color:rgba(244,242,238,0.74)"></div>
+        </div>
+
+        <aside class="side" style="flex:none; width:330px; position:sticky; top:34px; display:flex; flex-direction:column; gap:16px">
+          <div style="border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:20px">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px"><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">УРОКИ МОДУЛЯ</div><div id="lesson-list-count" style="font-size:11px; color:rgba(244,242,238,0.4)"></div></div>
+            <div id="lesson-list" style="display:flex; flex-direction:column; gap:3px"></div>
+          </div>
+
+          <div id="lesson-materials-card" style="border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:20px">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:16px">МАТЕРИАЛЫ УРОКА</div>
+            <div id="lesson-materials" style="display:flex; flex-direction:column; gap:4px"></div>
+          </div>
+
+          <div id="lesson-checklist-card" style="border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:20px">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:16px">ЧЕК-ЛИСТ ПРАКТИКИ</div>
+            <div id="lesson-checklist" style="display:flex; flex-direction:column; gap:13px"></div>
+          </div>
+
+          <button id="lesson-cta" style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border:none; border-radius:13px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:14.5px; font-weight:600; cursor:pointer; transition:transform .15s" data-hover="transform:translateY(-2px)"><span id="lesson-cta-text">Урок пройден</span> <span style="font-size:13px">→</span></button>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ======================= HOMEWORK ======================= -->
+    <section class="screen" data-screen="homework" style="padding:40px 0 80px; animation:fadeIn .4s ease both">
+      <div class="split" style="display:flex; gap:48px; max-width:1240px; margin:0 auto; padding:0 56px; align-items:flex-start">
+
+        <div class="main" style="flex:1; min-width:0; max-width:720px">
+          <div style="display:flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:rgba(244,242,238,0.42); margin-bottom:20px">
+            <span>Домашка</span><span>/</span><span style="color:var(--accent)">Модуль 03</span>
+          </div>
+          <div id="hw-badge" style="display:inline-flex; align-items:center; gap:8px; padding:5px 12px; border-radius:100px; background:rgba(232,131,90,0.12); border:1px solid rgba(232,131,90,0.25); font-size:12px; font-weight:500; color:var(--accent); margin-bottom:20px"><span style="width:6px; height:6px; border-radius:50%; background:var(--accent)"></span><span id="hw-badge-text">В работе</span></div>
+          <h1 id="hw-title" style="font-family:'Lora',serif; font-weight:500; font-size:38px; line-height:1.12; letter-spacing:-0.02em; margin:0 0 28px; color:#F7F5F1">Домашнее задание</h1>
+
+          <div style="border-top:1px solid rgba(255,255,255,0.06); margin-bottom:34px">
+            <div style="display:flex; align-items:center; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.05)"><span style="width:150px; flex:none; font-size:13px; color:rgba(244,242,238,0.4)">Дедлайн</span><span id="hw-deadline" style="font-size:13.5px; color:#F4F2EE">—</span></div>
+            <div style="display:flex; align-items:center; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.05)"><span style="width:150px; flex:none; font-size:13px; color:rgba(244,242,238,0.4)">Наставник</span><span style="display:flex; align-items:center; gap:8px; font-size:13.5px; color:#F4F2EE"><span id="hw-mentor-init" style="width:20px; height:20px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 5px,#1b1b1b 5px 10px); border:1px solid rgba(255,255,255,0.1); display:inline-flex; align-items:center; justify-content:center; font-size:8.5px; font-weight:600; color:rgba(244,242,238,0.7)">—</span><span id="hw-mentor-name">наставник</span></span></div>
+            <div style="display:flex; align-items:center; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.05)"><span style="width:150px; flex:none; font-size:13px; color:rgba(244,242,238,0.4)">Сложность</span><span style="display:flex; gap:4px; align-items:center"><span style="width:18px; height:5px; border-radius:3px; background:var(--accent)"></span><span style="width:18px; height:5px; border-radius:3px; background:var(--accent)"></span><span style="width:18px; height:5px; border-radius:3px; background:rgba(255,255,255,0.1)"></span><span style="font-size:12.5px; color:rgba(244,242,238,0.5); margin-left:6px">средняя</span></span></div>
+            <div style="display:flex; align-items:center; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.05)"><span style="width:150px; flex:none; font-size:13px; color:rgba(244,242,238,0.4)">Формат сдачи</span><span id="hw-format" style="font-size:13.5px; color:#F4F2EE">—</span></div>
+          </div>
+
+          <div id="hw-desc" style="font-size:16px; line-height:1.7; color:rgba(244,242,238,0.72)"></div>
+
+          <h2 id="hw-criteria-head" style="font-family:'Lora',serif; font-weight:500; font-size:22px; color:#F7F5F1; margin:38px 0 18px">Критерии оценки</h2>
+          <div id="homework-criteria" style="display:flex; flex-direction:column; gap:2px"></div>
+        </div>
+
+        <aside class="side" style="flex:none; width:330px; position:sticky; top:34px; display:flex; flex-direction:column; gap:16px">
+          <div style="border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:20px">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:14px">ВАША РАБОТА</div>
+            <input id="homework-file" type="file" style="display:none">
+            <div id="homework-submit-area"></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ======================= REVIEW ======================= -->
+    <section class="screen" data-screen="review" style="padding:40px 0 80px; animation:fadeIn .4s ease both">
+      <div style="max-width:1240px; margin:0 auto; padding:0 56px">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px; margin-bottom:34px">
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:rgba(244,242,238,0.42); margin-bottom:14px">ПРОВЕРКА ДОМАШНЕЙ РАБОТЫ</div>
+            <h1 id="review-title" style="font-family:'Lora',serif; font-weight:500; font-size:36px; line-height:1.1; letter-spacing:-0.02em; margin:0; color:#F7F5F1">Работа на проверке</h1>
+          </div>
+          <div id="review-verdict-badge" style="flex:none; display:inline-flex; align-items:center; gap:9px; padding:9px 16px; border-radius:100px; background:rgba(232,131,90,0.1); border:1px solid rgba(232,131,90,0.28); font-size:13px; font-weight:600; color:var(--accent)"><span id="review-verdict-dot" style="width:7px; height:7px; border-radius:50%; background:var(--accent)"></span><span id="review-verdict-text">Требует доработки</span></div>
+        </div>
+
+        <div class="split" style="display:flex; gap:40px; align-items:flex-start">
+
+          <div class="main" style="flex:1; min-width:0; position:sticky; top:34px">
+            <div style="position:relative; aspect-ratio:16/11; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.09); background:repeating-linear-gradient(135deg,#161616 0 13px,#111111 13px 26px)">
+              <div id="review-file" style="position:absolute; top:16px; left:18px; font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.4)">// загруженная работа</div>
+              <div id="review-pins"></div>
+            </div>
+            <div style="display:flex; align-items:center; gap:9px; margin-top:14px; font-size:12.5px; color:rgba(244,242,238,0.4)"><span style="width:20px; height:20px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 5px,#1b1b1b 5px 10px); border:1px solid rgba(255,255,255,0.1)"></span><span id="review-submitted">Сдано вами</span></div>
+          </div>
+
+          <div class="side" style="flex:none; width:430px; display:flex; flex-direction:column; gap:18px">
+
+            <div style="border:1px solid rgba(255,255,255,0.08); border-radius:16px; background:linear-gradient(160deg,#141210,#101010); padding:26px">
+              <div style="display:flex; align-items:center; justify-content:space-between">
+                <div id="review-grade-label" style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">ОЦЕНКА</div>
+                <div id="review-grade-sub" style="font-size:12px; color:rgba(244,242,238,0.4)"></div>
+              </div>
+              <div style="display:flex; align-items:flex-end; gap:14px; margin:16px 0 22px">
+                <span id="review-total-big" style="font-family:'Lora',serif; font-size:68px; line-height:0.85; color:#F7F5F1; letter-spacing:-0.02em">—</span>
+                <span style="font-size:22px; color:rgba(244,242,238,0.35); padding-bottom:8px">/ 10</span>
+                <span style="flex:1"></span>
+                <span id="review-caption" style="font-size:13px; color:rgba(244,242,238,0.55); padding-bottom:10px; text-align:right; max-width:150px"></span>
+              </div>
+              <div id="review-grades" style="display:flex; flex-direction:column; gap:11px"></div>
+            </div>
+
+            <div style="display:flex; gap:13px; padding:18px 20px; border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:#101010">
+              <span id="review-mentor-init" style="flex:none; width:32px; height:32px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 6px,#1b1b1b 6px 12px); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:rgba(244,242,238,0.7)">—</span>
+              <div><div id="review-mentor-name" style="font-size:13px; font-weight:600; margin-bottom:6px">Наставник</div><div id="review-verdict-fulltext" style="font-size:13.5px; line-height:1.6; color:rgba(244,242,238,0.65)"></div></div>
+            </div>
+
+            <div id="review-comments-label" style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin:6px 2px 0">ЗАМЕЧАНИЯ ПО МАКЕТУ · 0</div>
+            <div id="review-comments" style="display:flex; flex-direction:column; gap:18px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= CHAT ======================= -->
+    <section class="screen" data-screen="chat" style="height:100vh; animation:fadeIn .4s ease both">
+
+      <div style="flex:1; min-width:0; display:flex; flex-direction:column; height:100%">
+        <div style="flex:none; display:flex; align-items:center; gap:13px; padding:18px 32px; border-bottom:1px solid rgba(255,255,255,0.06)">
+          <span id="chat-head-init" style="width:38px; height:38px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 6px,#1b1b1b 6px 12px); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; color:rgba(244,242,238,0.7)">—</span>
+          <div style="flex:1"><div id="chat-head-name" style="font-size:14.5px; font-weight:600">—</div><div style="font-size:12px; color:#8FA98C; display:flex; align-items:center; gap:6px"><span style="width:6px; height:6px; border-radius:50%; background:#8FA98C"></span>в сети</div></div>
+          <span id="chat-head-role" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.4)"></span>
+        </div>
+
+        <div style="flex:1; overflow-y:auto; padding:30px 32px; display:flex; flex-direction:column; gap:12px">
+          <div style="align-self:center; font-size:11.5px; color:rgba(244,242,238,0.35); padding:4px 12px; border-radius:100px; background:rgba(255,255,255,0.04); margin-bottom:6px">Сегодня</div>
+          <div id="chat-messages" style="display:contents"></div>
+        </div>
+
+        <div style="flex:none; padding:16px 32px 22px">
+          <div style="display:flex; align-items:center; gap:12px; padding:8px 8px 8px 18px; border:1px solid rgba(255,255,255,0.1); border-radius:14px; background:#101010">
+            <span data-action="chat-attach" style="color:rgba(244,242,238,0.4); cursor:pointer; font-size:16px" data-hover="color:#F4F2EE">＋</span>
+            <span style="flex:1; font-size:14px; color:rgba(244,242,238,0.35)">Написать сообщение…</span>
+            <button style="width:36px; height:36px; border:none; border-radius:10px; background:#F4F2EE; color:#0B0B0B; font-size:15px; cursor:pointer">↑</button>
+          </div>
+        </div>
+      </div>
+
+      <aside id="chat-partner-panel" style="flex:none; width:312px; border-left:1px solid rgba(255,255,255,0.06); padding:34px 26px; overflow-y:auto"></aside>
+    </section>
+
+    <!-- ======================= PORTFOLIO ======================= -->
+    <section class="screen" data-screen="portfolio" style="padding:46px 56px 80px; max-width:1240px; margin:0 auto; animation:fadeIn .4s ease both">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:42px">
+        <div>
+          <div id="portfolio-owner" style="font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.06em; color:var(--accent); margin-bottom:14px">ПОРТФОЛИО</div>
+          <h1 style="font-family:'Lora',serif; font-weight:500; font-size:44px; letter-spacing:-0.02em; margin:0; color:#F7F5F1">Работы и <span style="font-style:italic">кейсы</span></h1>
+        </div>
+        <div style="display:flex; gap:10px"><button data-action="portfolio-share" style="padding:10px 16px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:transparent; color:rgba(244,242,238,0.6); font-family:'Onest',sans-serif; font-size:13px; cursor:pointer" data-hover="border-color:rgba(255,255,255,0.22)">Поделиться</button><button data-action="add-portfolio" style="padding:10px 16px; border:none; border-radius:10px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:13px; font-weight:600; cursor:pointer" data-hover="opacity:0.92">+ Новый кейс</button></div>
+      </div>
+
+      <div id="portfolio-grid" class="grid-bento" style="display:grid; grid-template-columns:repeat(12,1fr); gap:18px"></div>
+    </section>
+
+    <!-- ======================= PROFILE ======================= -->
+    <section class="screen" data-screen="profile" style="padding:46px 56px 80px; max-width:1080px; margin:0 auto; animation:fadeIn .4s ease both">
+      <div style="display:flex; align-items:center; gap:26px; padding-bottom:38px; border-bottom:1px solid rgba(255,255,255,0.07)">
+        <span id="profile-avatar" style="flex:none; width:96px; height:96px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 9px,#1b1b1b 9px 18px); border:1px solid rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:600; color:rgba(244,242,238,0.7)">—</span>
+        <div style="flex:1">
+          <h1 id="profile-name" style="font-family:'Lora',serif; font-weight:500; font-size:38px; letter-spacing:-0.02em; margin:0 0 8px; color:#F7F5F1"></h1>
+          <div id="profile-meta" style="font-size:14px; color:rgba(244,242,238,0.5)"></div>
+        </div>
+        <button data-action="edit-profile" style="padding:11px 18px; border:1px solid rgba(255,255,255,0.12); border-radius:10px; background:transparent; color:rgba(244,242,238,0.65); font-family:'Onest',sans-serif; font-size:13px; cursor:pointer" data-hover="border-color:rgba(255,255,255,0.25)">Редактировать профиль</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin:32px 0">
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:#101010; padding:24px"><div id="profile-lessons" style="font-family:'Lora',serif; font-size:40px; color:#F7F5F1; line-height:1">0</div><div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:10px">уроков пройдено</div></div>
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:#101010; padding:24px"><div id="profile-hw" style="font-family:'Lora',serif; font-size:40px; color:#F7F5F1; line-height:1">0</div><div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:10px">домашек сдано</div></div>
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:linear-gradient(160deg,#141210,#101010); padding:24px"><div id="profile-avg" style="font-family:'Lora',serif; font-size:40px; color:var(--accent); line-height:1">—</div><div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:10px">средний балл</div></div>
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:#101010; padding:24px"><div id="profile-streak" style="font-family:'Lora',serif; font-size:40px; color:#F7F5F1; line-height:1">0</div><div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:10px">дней подряд</div></div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:18px">
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:16px; background:#101010; padding:26px 28px">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:18px">АКТИВНОСТЬ ЗА 10 НЕДЕЛЬ</div>
+          <div id="profile-heatmap" style="display:grid; grid-template-columns:repeat(20,1fr); gap:5px"></div>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:16px; font-size:11px; color:rgba(244,242,238,0.35)">меньше<span style="width:11px; height:11px; border-radius:3px; background:rgba(255,255,255,0.05)"></span><span style="width:11px; height:11px; border-radius:3px; background:rgba(232,131,90,0.35)"></span><span style="width:11px; height:11px; border-radius:3px; background:rgba(232,131,90,0.7)"></span><span style="width:11px; height:11px; border-radius:3px; background:var(--accent)"></span>больше</div>
+        </div>
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:16px; background:#101010; padding:26px 28px">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:18px">НАВЫКИ</div>
+          <div style="display:flex; flex-direction:column; gap:16px">
+            <div><div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:7px"><span style="color:#F4F2EE">Типографика</span><span style="color:rgba(244,242,238,0.4)">сильно</span></div><div style="height:5px; border-radius:3px; background:rgba(255,255,255,0.07)"><span style="display:block; height:100%; width:86%; border-radius:3px; background:#8FA98C"></span></div></div>
+            <div><div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:7px"><span style="color:#F4F2EE">Цвет и контраст</span><span style="color:rgba(244,242,238,0.4)">растёт</span></div><div style="height:5px; border-radius:3px; background:rgba(255,255,255,0.07)"><span style="display:block; height:100%; width:64%; border-radius:3px; background:var(--accent)"></span></div></div>
+            <div><div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:7px"><span style="color:#F4F2EE">Прототипирование</span><span style="color:rgba(244,242,238,0.4)">впереди</span></div><div style="height:5px; border-radius:3px; background:rgba(255,255,255,0.07)"><span style="display:block; height:100%; width:28%; border-radius:3px; background:rgba(244,242,238,0.3)"></span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= ADMIN ======================= -->
+    <section class="screen" data-screen="admin" style="padding:46px 56px 80px; max-width:1280px; margin:0 auto; animation:fadeIn .4s ease both">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:36px">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.06em; color:var(--accent); margin-bottom:14px">ПАНЕЛЬ НАСТАВНИКА</div>
+          <h1 style="font-family:'Lora',serif; font-weight:500; font-size:40px; letter-spacing:-0.02em; margin:0; color:#F7F5F1">Поток 7 · <span style="font-style:italic">студенты</span></h1>
+        </div>
+        <div style="display:flex; gap:10px">
+          <button data-nav="queue" style="padding:10px 16px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:transparent; color:rgba(244,242,238,0.65); font-family:'Onest',sans-serif; font-size:13px; cursor:pointer" data-hover="border-color:rgba(255,255,255,0.22)">Очередь проверки</button>
+          <button data-nav="builder" style="padding:10px 16px; border:none; border-radius:10px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:13px; font-weight:600; cursor:pointer">+ Конструктор курса</button>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:30px">
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:#101010; padding:22px 24px"><div style="font-size:12.5px; color:rgba(244,242,238,0.45)">Всего студентов</div><div style="font-family:'Lora',serif; font-size:42px; color:#F7F5F1; margin-top:8px; line-height:1">12</div></div>
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:#101010; padding:22px 24px"><div style="font-size:12.5px; color:rgba(244,242,238,0.45); display:flex; align-items:center; gap:7px"><span style="width:6px; height:6px; border-radius:50%; background:#8FA98C"></span>Активны сейчас</div><div style="font-family:'Lora',serif; font-size:42px; color:#F7F5F1; margin-top:8px; line-height:1">4</div></div>
+        <div data-nav="queue" style="border:1px solid rgba(232,131,90,0.25); border-radius:14px; background:linear-gradient(160deg,#1a130e,#101010); padding:22px 24px; cursor:pointer; transition:transform .2s" data-hover="transform:translateY(-2px)"><div style="font-size:12.5px; color:rgba(244,242,238,0.45); display:flex; align-items:center; justify-content:space-between">Домашек на проверке <span style="color:var(--accent)">→</span></div><div style="font-family:'Lora',serif; font-size:42px; color:var(--accent); margin-top:8px; line-height:1">3</div></div>
+      </div>
+
+      <div style="border:1px solid rgba(255,255,255,0.07); border-radius:16px; background:#0F0F0F; overflow:hidden">
+        <div style="display:flex; align-items:center; padding:14px 24px; border-bottom:1px solid rgba(255,255,255,0.06); font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.05em; color:rgba(244,242,238,0.38)">
+          <span style="flex:1">СТУДЕНТ</span><span style="width:200px">ТЕКУЩИЙ МОДУЛЬ</span><span style="width:130px">ПРОГРЕСС</span><span style="width:150px">СТАТУС ДЗ</span><span style="width:120px; text-align:right">АКТИВНОСТЬ</span>
+        </div>
+        <div id="admin-students"></div>
+      </div>
+    </section>
+
+    <!-- ======================= QUEUE ======================= -->
+    <section class="screen" data-screen="queue" style="padding:40px 0 60px; animation:fadeIn .4s ease both">
+      <div class="split" style="display:flex; gap:36px; max-width:1320px; margin:0 auto; padding:0 48px; align-items:flex-start">
+
+        <div class="main" style="flex:none; width:344px; position:sticky; top:34px">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px">
+            <div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; color:var(--accent); margin-bottom:8px">ПАНЕЛЬ НАСТАВНИКА</div><h1 style="font-family:'Lora',serif; font-weight:500; font-size:28px; margin:0; color:#F7F5F1; letter-spacing:-0.01em">Очередь проверки</h1></div>
+          </div>
+          <div style="display:flex; gap:6px; margin-bottom:16px"><span id="queue-tab-new" data-action="queue-tab" data-tab="new" style="font-size:12px; color:#0B0B0B; background:#F4F2EE; padding:5px 12px; border-radius:100px; font-weight:600; cursor:pointer">Новые · <span id="queue-count-new">0</span></span><span id="queue-tab-all" data-action="queue-tab" data-tab="all" style="font-size:12px; color:rgba(244,242,238,0.55); padding:5px 12px; border-radius:100px; border:1px solid rgba(255,255,255,0.1); cursor:pointer">Все · <span id="queue-count-all">0</span></span></div>
+          <div id="queue-list" style="display:flex; flex-direction:column; gap:8px"></div>
+        </div>
+
+        <div class="side" style="flex:1; min-width:0; display:flex; flex-direction:column; gap:18px">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:20px">
+            <div>
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span id="queue-grade-init" style="width:26px; height:26px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 5px,#1b1b1b 5px 10px); border:1px solid rgba(255,255,255,0.1); display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:rgba(244,242,238,0.7)">—</span><span id="queue-grade-who" style="font-size:13px; color:rgba(244,242,238,0.55)">—</span></div>
+              <h2 id="queue-grade-title" style="font-family:'Lora',serif; font-weight:500; font-size:28px; margin:0; color:#F7F5F1; letter-spacing:-0.01em">Работа на проверке</h2>
+            </div>
+            <button data-action="open-fig" style="flex:none; padding:8px 14px; border:1px solid rgba(255,255,255,0.1); border-radius:9px; background:transparent; color:rgba(244,242,238,0.6); font-family:'Onest',sans-serif; font-size:12.5px; cursor:pointer" data-hover="border-color:rgba(255,255,255,0.22)">Открыть файл ↗</button>
+          </div>
+
+          <div style="position:relative; aspect-ratio:16/8; border-radius:14px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); background:repeating-linear-gradient(135deg,#161616 0 13px,#111111 13px 26px)">
+            <span id="queue-grade-file" style="position:absolute; top:14px; left:16px; font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.4)">// работа студента</span>
+            <span style="position:absolute; top:42%; left:30%; transform:translate(-50%,-50%); width:24px; height:24px; border-radius:50%; background:var(--accent); color:#0B0B0B; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; box-shadow:0 0 0 4px rgba(11,11,11,0.6)">1</span>
+          </div>
+
+          <div style="border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:22px 24px">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">ОЦЕНКА ПО КРИТЕРИЯМ</span><span style="font-size:12.5px; color:rgba(244,242,238,0.45)">итог: <span id="queue-total" style="font-family:'Lora',serif; font-size:18px; color:#F7F5F1">0</span> / 10</span></div>
+            <div id="queue-scores" style="display:flex; flex-direction:column; gap:14px"></div>
+          </div>
+
+          <div style="border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:20px 22px">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:14px">РЕВЬЮ ДЛЯ СТУДЕНТА</div>
+            <textarea id="queue-review-text" placeholder="Напишите ревью для студента…" style="width:100%; min-height:84px; padding:14px 16px; border:1px solid rgba(255,255,255,0.08); border-radius:11px; background:#0B0B0B; font-size:14px; line-height:1.6; color:#F4F2EE; font-family:'Onest',sans-serif; outline:none; resize:vertical; box-sizing:border-box">Видно, что подход понят — особенно с акцентом. Разведи фон и поверхность по светлоте и переименуй токены по роли…</textarea>
+            <div id="queue-review-status" style="display:none; font-size:12.5px; margin-top:10px"></div>
+            <div style="display:flex; align-items:center; gap:10px; margin-top:14px">
+              <button data-action="attach-example" style="display:flex; align-items:center; gap:8px; padding:9px 14px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:transparent; color:rgba(244,242,238,0.6); font-family:'Onest',sans-serif; font-size:12.5px; cursor:pointer" data-hover="border-color:rgba(255,255,255,0.22)">＋ Прикрепить пример</button>
+              <span style="flex:1"></span>
+              <button id="queue-verdict-rework" data-verdict="rework" style="padding:11px 18px; border:1px solid rgba(201,139,107,0.4); border-radius:10px; background:rgba(201,139,107,0.08); color:#C98B6B; font-family:'Onest',sans-serif; font-size:13.5px; font-weight:600; cursor:pointer">Вернуть на доработку</button>
+              <button id="queue-verdict-accept" data-verdict="accepted" style="padding:11px 20px; border:none; border-radius:10px; background:#8FA98C; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:13.5px; font-weight:600; cursor:pointer" data-hover="opacity:0.92">Принять работу ✓</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= BUILDER ======================= -->
+    <section class="screen" data-screen="builder" style="padding:40px 0 60px; animation:fadeIn .4s ease both">
+      <div style="max-width:1320px; margin:0 auto; padding:0 48px">
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:32px">
+          <div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; color:var(--accent); margin-bottom:10px">КОНСТРУКТОР КУРСА</div><h1 style="font-family:'Lora',serif; font-weight:500; font-size:36px; margin:0; color:#F7F5F1; letter-spacing:-0.02em">Структура программы</h1></div>
+          <div style="display:flex; align-items:center; gap:12px"><span id="builder-savestate" style="font-size:12.5px; color:rgba(244,242,238,0.45)">черновик сохранён</span><button data-action="builder-publish" style="padding:10px 18px; border:none; border-radius:10px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:13px; font-weight:600; cursor:pointer" data-hover="opacity:0.92">Опубликовать изменения</button></div>
+        </div>
+
+        <div class="split" style="display:flex; gap:24px; align-items:flex-start">
+          <div class="main" style="flex:1; min-width:0; display:flex; flex-direction:column; gap:10px">
+            <div id="builder-modules" style="display:flex; flex-direction:column; gap:10px"></div>
+            <div data-action="add-module" style="display:flex; align-items:center; justify-content:center; gap:10px; padding:16px; border:1px dashed rgba(255,255,255,0.12); border-radius:13px; color:rgba(244,242,238,0.45); font-size:14px; cursor:pointer" data-hover="border-color:rgba(255,255,255,0.22); color:rgba(244,242,238,0.7)"><span style="font-size:17px">＋</span>Новый модуль</div>
+          </div>
+
+          <aside id="builder-inspector" class="side" style="flex:none; width:368px; position:sticky; top:34px; border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:22px">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">СВОДКА МОДУЛЯ</span><span id="builder-insp-status" style="font-size:11px; color:#8FA98C"></span></div>
+
+            <label style="display:block; font-size:12px; color:rgba(244,242,238,0.45); margin-bottom:7px">Название</label>
+            <input id="builder-insp-title" value="Цветовые системы в интерфейсах" style="width:100%; padding:11px 14px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:#0B0B0B; font-size:14px; color:#F4F2EE; margin-bottom:18px; font-family:'Onest',sans-serif; outline:none; box-sizing:border-box">
+
+            <label style="display:block; font-size:12px; color:rgba(244,242,238,0.45); margin-bottom:7px">Видео</label>
+            <div style="display:flex; align-items:center; gap:11px; padding:11px 14px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:#0B0B0B; margin-bottom:18px"><span style="flex:none; width:30px; height:30px; border-radius:7px; background:repeating-linear-gradient(135deg,#1d1d1d,#141414); border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center"><span style="border-left:8px solid rgba(244,242,238,0.7); border-top:5px solid transparent; border-bottom:5px solid transparent; margin-left:2px"></span></span><span style="flex:1; min-width:0"><span style="display:block; font-size:13px; color:#F4F2EE">lesson-3-2.mp4</span><span style="display:block; font-size:11px; color:rgba(244,242,238,0.4)">14:08 · 1080p</span></span><span style="color:rgba(244,242,238,0.35); cursor:pointer">↻</span></div>
+
+            <label style="display:block; font-size:12px; color:rgba(244,242,238,0.45); margin-bottom:7px">Материалы</label>
+            <div style="display:flex; flex-direction:column; gap:7px; margin-bottom:14px">
+              <div style="display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid rgba(255,255,255,0.07); border-radius:9px; background:#0B0B0B"><span style="font-family:'JetBrains Mono',monospace; font-size:8.5px; color:var(--accent); border:1px solid rgba(255,255,255,0.1); padding:2px 6px; border-radius:5px">FIG</span><span style="flex:1; font-size:12.5px; color:rgba(244,242,238,0.7)">Цветовые токены</span><span style="color:rgba(244,242,238,0.3); cursor:pointer">✕</span></div>
+              <div style="display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid rgba(255,255,255,0.07); border-radius:9px; background:#0B0B0B"><span style="font-family:'JetBrains Mono',monospace; font-size:8.5px; color:#C98B6B; border:1px solid rgba(255,255,255,0.1); padding:2px 6px; border-radius:5px">PDF</span><span style="flex:1; font-size:12.5px; color:rgba(244,242,238,0.7)">Конспект урока</span><span style="color:rgba(244,242,238,0.3); cursor:pointer">✕</span></div>
+            </div>
+            <div data-action="add-material" style="display:flex; align-items:center; gap:8px; padding:9px 12px; border:1px dashed rgba(255,255,255,0.12); border-radius:9px; color:rgba(244,242,238,0.45); font-size:12.5px; cursor:pointer; margin-bottom:18px" data-hover="border-color:rgba(255,255,255,0.22)"><span style="font-size:14px">＋</span>Добавить материал</div>
+
+            <label style="display:block; font-size:12px; color:rgba(244,242,238,0.45); margin-bottom:7px">Домашнее задание</label>
+            <div style="display:flex; align-items:center; gap:11px; padding:13px 14px; border:1px solid rgba(232,131,90,0.25); border-radius:10px; background:rgba(232,131,90,0.05); margin-bottom:22px"><span style="flex:none; width:8px; height:8px; border-radius:50%; background:var(--accent)"></span><span style="flex:1; font-size:13px; color:#F4F2EE">Цветовая система для экрана</span><span data-edit-homework="hw_m3" style="font-size:11px; color:rgba(244,242,238,0.45); cursor:pointer" data-hover="color:#F4F2EE">изменить</span></div>
+
+            <div style="display:flex; gap:10px"><button data-action="builder-unpublish" style="flex:1; padding:12px; border:1px solid rgba(255,255,255,0.12); border-radius:10px; background:transparent; color:rgba(244,242,238,0.65); font-family:'Onest',sans-serif; font-size:13px; cursor:pointer" data-hover="border-color:rgba(255,255,255,0.25)">Снять с публикации</button><button data-action="builder-save" style="flex:1; padding:12px; border:none; border-radius:10px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:13px; font-weight:600; cursor:pointer" data-hover="opacity:0.92">Сохранить</button></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "test-server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "port": 3101,
+      "env": {
+        "PORT": "3101",
+        "DATA_DIR": "c:/obusch/data/_test2"
+      }
+    },
+    {
+      "name": "qa2-server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "port": 3103,
+      "env": {
+        "PORT": "3103",
+        "DATA_DIR": "c:/obusch/data/_qa2"
+      }
+    }
+  ]
+}

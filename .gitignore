@@ -1,0 +1,10 @@
+node_modules/
+data/db.json
+data/*.tmp
+data/*.log
+uploads/*
+!uploads/.gitkeep
+.DS_Store
+
+data/_*
+data/*.log

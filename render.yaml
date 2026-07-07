@@ -1,0 +1,22 @@
+# Render Blueprint — разворачивает сайт одним нажатием.
+# Render прочитает этот файл и создаст веб-сервис + постоянный диск для данных.
+services:
+  - type: web
+    name: uiux-design-club
+    runtime: node
+    region: frankfurt            # ближе к РФ/СНГ; можно oregon/singapore
+    plan: starter                # нужен для постоянного диска (данные не теряются). Для теста можно free — но тогда данные сбрасываются при перезапуске.
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true       # Render сам сгенерит секрет
+      - key: DATA_DIR
+        value: /data
+    disk:
+      name: club-data
+      mountPath: /data            # сюда сохраняются аккаунты, ДЗ, переписка, загруженные файлы
+      sizeGB: 1

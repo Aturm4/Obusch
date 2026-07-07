@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:#0B0B0B}
+  *{box-sizing:border-box}
+  *::-webkit-scrollbar{width:10px;height:10px}
+  *::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:8px;border:3px solid #0B0B0B}
+  *::-webkit-scrollbar-track{background:transparent}
+  ::selection{background:rgba(232,131,90,0.28)}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @media (max-width:1140px){
+    .split{flex-direction:column !important}
+    .split > .side{width:100% !important; position:static !important; top:auto !important}
+    .split > .main{max-width:none !important; width:100% !important; position:static !important; top:auto !important}
+  }
+  @media (max-width:900px){
+    .grid-bento{grid-template-columns:1fr !important}
+    .grid-bento > *{grid-column:1 / -1 !important; grid-row:auto !important}
+  }
+</style>
+</helmet>
+
+<div style="--accent: {{ accent }}; display:flex; height:100vh; width:100%; background:#0B0B0B; color:#F4F2EE; font-family:'Onest',sans-serif; -webkit-font-smoothing:antialiased; overflow:hidden">
+
+  <sc-if value="{{ showSidebar }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:256px; flex:none; height:100%; display:flex; flex-direction:column; background:#0A0A0A; border-right:1px solid rgba(255,255,255,0.06); padding:16px 14px 14px">
+
+    <button style="display:flex; align-items:center; gap:11px; width:100%; padding:8px 8px; border:none; border-radius:10px; background:transparent; cursor:pointer; text-align:left" style-hover="background:rgba(255,255,255,0.04)">
+      <span style="flex:none; width:30px; height:30px; border-radius:8px; background:linear-gradient(150deg,#1d1d1d,#121212); border:1px solid rgba(255,255,255,0.09); display:flex; align-items:center; justify-content:center; font-family:'Lora',serif; font-size:16px; color:var(--accent,#E8835A)">U</span>
+      <span style="flex:1; min-width:0">
+        <span style="display:block; font-size:13.5px; font-weight:600; color:#F4F2EE; line-height:1.2">UI/UX Design</span>
+        <span style="display:block; font-size:11px; color:rgba(244,242,238,0.4); margin-top:1px">Поток 7 · закрытый клуб</span>
+      </span>
+      <span style="flex:none; color:rgba(244,242,238,0.3); font-size:11px">⌄</span>
+    </button>
+
+    <div style="display:flex; align-items:center; gap:9px; margin:14px 4px 16px; padding:7px 10px; border-radius:9px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.015); color:rgba(244,242,238,0.4); font-size:12.5px; cursor:pointer" style-hover="border-color:rgba(255,255,255,0.12)">
+      <span style="flex:1">Поиск</span>
+      <kbd style="font-family:'JetBrains Mono',monospace; font-size:10.5px; padding:2px 5px; border-radius:5px; background:rgba(255,255,255,0.05); color:rgba(244,242,238,0.5)">⌘K</kbd>
+    </div>
+
+    <nav style="display:flex; flex-direction:column; gap:2px">
+      <sc-for list="{{ nav }}" as="item" hint-placeholder-count="8">
+        <button onClick="{{ item.onClick }}" style="position:relative; display:flex; align-items:center; gap:11px; width:100%; padding:8px 10px; border:none; border-radius:9px; background:{{ item.bg }}; color:{{ item.color }}; font-family:'Onest',sans-serif; font-size:13.5px; font-weight:500; cursor:pointer; text-align:left; transition:background .15s,color .15s" style-hover="background:rgba(255,255,255,0.045); color:#F4F2EE">
+          <sc-if value="{{ item.active }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; left:-14px; top:50%; width:2.5px; height:17px; margin-top:-8.5px; background:var(--accent,#E8835A); border-radius:0 3px 3px 0"></span></sc-if>
+          <span style="flex:none; display:flex; width:16px; height:16px">{{ item.iconEl }}</span>
+          <span style="flex:1">{{ item.label }}</span>
+          <sc-if value="{{ item.badge }}" hint-placeholder-val="{{ false }}"><span style="flex:none; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent,#E8835A)">{{ item.badge }}</span></sc-if>
+        </button>
+      </sc-for>
+    </nav>
+
+    <div style="margin:20px 10px 8px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:rgba(244,242,238,0.28)">Наставник</div>
+    <nav style="display:flex; flex-direction:column; gap:2px">
+      <sc-for list="{{ adminNav }}" as="item" hint-placeholder-count="1">
+        <button onClick="{{ item.onClick }}" style="position:relative; display:flex; align-items:center; gap:11px; width:100%; padding:8px 10px; border:none; border-radius:9px; background:{{ item.bg }}; color:{{ item.color }}; font-family:'Onest',sans-serif; font-size:13.5px; font-weight:500; cursor:pointer; text-align:left" style-hover="background:rgba(255,255,255,0.045); color:#F4F2EE">
+          <sc-if value="{{ item.active }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; left:-14px; top:50%; width:2.5px; height:17px; margin-top:-8.5px; background:var(--accent,#E8835A); border-radius:0 3px 3px 0"></span></sc-if>
+          <span style="flex:none; display:flex; width:16px; height:16px">{{ item.iconEl }}</span>
+          <span style="flex:1">{{ item.label }}</span>
+          <sc-if value="{{ item.badge }}" hint-placeholder-val="{{ false }}"><span style="flex:none; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent,#E8835A)">{{ item.badge }}</span></sc-if>
+        </button>
+      </sc-for>
+    </nav>
+
+    <div style="flex:1"></div>
+
+    <button onClick="{{ goProfile }}" style="display:flex; align-items:center; gap:11px; width:100%; padding:9px 8px; border:none; border-radius:10px; background:transparent; cursor:pointer; text-align:left" style-hover="background:rgba(255,255,255,0.04)">
+      <span style="flex:none; width:30px; height:30px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 7px,#1b1b1b 7px 14px); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:600; color:rgba(244,242,238,0.7)">МК</span>
+      <span style="flex:1; min-width:0">
+        <span style="display:block; font-size:13px; font-weight:600; color:#F4F2EE">Марк Кравцов</span>
+        <span style="display:block; font-size:11px; color:rgba(244,242,238,0.4)">Студент · 38% курса</span>
+      </span>
+      <span style="flex:none; width:7px; height:7px; border-radius:50%; background:#8FA98C"></span>
+    </button>
+  </aside>
+  </sc-if>
+
+  <main style="flex:1; height:100%; overflow-y:auto; overflow-x:hidden">
+
+    <!-- ======================= ONBOARDING ======================= -->
+    <sc-if value="{{ show.onboarding }}" hint-placeholder-val="{{ true }}">
+    <section data-screen-label="Onboarding" style="position:relative; min-height:100vh; width:100%; display:flex; flex-direction:column; background:radial-gradient(120% 90% at 78% 8%, rgba(232,131,90,0.07), transparent 55%), #0B0B0B">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:24px 48px; border-bottom:1px solid rgba(255,255,255,0.04)">
+        <div style="display:flex; align-items:center; gap:11px">
+          <span style="width:26px; height:26px; border-radius:7px; background:linear-gradient(150deg,#1d1d1d,#121212); border:1px solid rgba(255,255,255,0.09); display:flex; align-items:center; justify-content:center; font-family:'Lora',serif; font-size:14px; color:var(--accent,#E8835A)">U</span>
+          <span style="font-size:14px; font-weight:600; letter-spacing:-0.01em">UI/UX Design</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:22px; font-size:13px; color:rgba(244,242,238,0.5)">
+          <span style="cursor:pointer" style-hover="color:#F4F2EE">Программа</span>
+          <span style="cursor:pointer" style-hover="color:#F4F2EE">Наставник</span>
+          <span style="cursor:pointer; color:#F4F2EE">Войти →</span>
+        </div>
+      </div>
+
+      <div style="flex:1; display:grid; grid-template-columns:1.05fr 0.95fr; gap:56px; align-items:center; padding:56px 48px 64px; max-width:1320px; margin:0 auto; width:100%">
+        <div style="animation:fadeUp .7s cubic-bezier(.2,.7,.2,1) both">
+          <div style="display:inline-flex; align-items:center; gap:9px; padding:6px 12px 6px 10px; border:1px solid rgba(255,255,255,0.08); border-radius:100px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.04em; color:rgba(244,242,238,0.6); margin-bottom:30px">
+            <span style="width:6px; height:6px; border-radius:50%; background:var(--accent,#E8835A)"></span>
+            НАБОР В ПОТОК 7 ОТКРЫТ
+          </div>
+          <h1 style="font-family:'Lora',serif; font-weight:500; font-size:64px; line-height:1.04; letter-spacing:-0.02em; margin:0 0 24px; color:#F7F5F1">Дизайнер,<br>которому доверяют<br><span style="font-style:italic; color:var(--accent,#E8835A)">интерфейс</span> целиком.</h1>
+          <p style="font-size:17px; line-height:1.65; color:rgba(244,242,238,0.55); max-width:440px; margin:0 0 40px">Не очередной онлайн-курс, а закрытое наставничество. Личное рабочее пространство, живая обратная связь и портфолио уровня продакт-дизайнера за 4 месяца.</p>
+          <div style="display:flex; align-items:center; gap:16px">
+            <button onClick="{{ startCourse }}" style="display:inline-flex; align-items:center; gap:10px; padding:15px 26px; border:none; border-radius:12px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:15px; font-weight:600; cursor:pointer; transition:transform .15s,box-shadow .2s" style-hover="transform:translateY(-2px); box-shadow:0 14px 40px rgba(0,0,0,0.5)">Начать обучение <span style="font-size:13px">→</span></button>
+            <button onClick="{{ goCourse }}" style="padding:15px 22px; border:1px solid rgba(255,255,255,0.12); border-radius:12px; background:transparent; color:#F4F2EE; font-family:'Onest',sans-serif; font-size:15px; font-weight:500; cursor:pointer" style-hover="border-color:rgba(255,255,255,0.28); background:rgba(255,255,255,0.02)">Смотреть программу</button>
+          </div>
+
+          <div style="display:flex; gap:0; margin-top:52px; border-top:1px solid rgba(255,255,255,0.07); padding-top:26px">
+            <div style="flex:1; padding-right:20px">
+              <div style="font-family:'Lora',serif; font-size:34px; color:#F7F5F1; line-height:1">7</div>
+              <div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:7px">модулей программы</div>
+            </div>
+            <div style="flex:1; padding:0 20px; border-left:1px solid rgba(255,255,255,0.07)">
+              <div style="font-family:'Lora',serif; font-size:34px; color:#F7F5F1; line-height:1">64</div>
+              <div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:7px">часа практики</div>
+            </div>
+            <div style="flex:1; padding-left:20px; border-left:1px solid rgba(255,255,255,0.07)">
+              <div style="font-family:'Lora',serif; font-size:34px; color:#F7F5F1; line-height:1">4</div>
+              <div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:7px">кейса в портфолио</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="position:relative; height:520px; animation:fadeIn 1s ease both">
+          <div style="position:absolute; top:0; right:0; width:330px; height:230px; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); background:repeating-linear-gradient(135deg,#161616 0 11px,#121212 11px 22px); box-shadow:0 30px 80px rgba(0,0,0,0.5)">
+            <div style="position:absolute; inset:0; display:flex; align-items:flex-end; padding:16px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.4)">// превью урока · 16:9</span></div>
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:46px; height:46px; border-radius:50%; background:rgba(244,242,238,0.92); display:flex; align-items:center; justify-content:center"><span style="border-left:12px solid #0B0B0B; border-top:8px solid transparent; border-bottom:8px solid transparent; margin-left:3px"></span></div>
+          </div>
+          <div style="position:absolute; top:200px; left:0; width:270px; padding:20px; border-radius:16px; border:1px solid rgba(255,255,255,0.08); background:#121212; box-shadow:0 30px 70px rgba(0,0,0,0.45)">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--accent,#E8835A); letter-spacing:0.06em">МОДУЛЬ 03 · В ПРОЦЕССЕ</div>
+            <div style="font-family:'Lora',serif; font-size:21px; margin:10px 0 14px; color:#F7F5F1">Цвет и контраст</div>
+            <div style="display:flex; gap:4px">
+              <span style="flex:1; height:4px; border-radius:3px; background:var(--accent,#E8835A)"></span>
+              <span style="flex:1; height:4px; border-radius:3px; background:var(--accent,#E8835A)"></span>
+              <span style="flex:0.5; height:4px; border-radius:3px; background:rgba(232,131,90,0.45)"></span>
+              <span style="flex:1; height:4px; border-radius:3px; background:rgba(255,255,255,0.08)"></span>
+              <span style="flex:1; height:4px; border-radius:3px; background:rgba(255,255,255,0.08)"></span>
+            </div>
+            <div style="font-size:12px; color:rgba(244,242,238,0.45); margin-top:12px">Урок 2 из 7 · осталось ~50 минут</div>
+          </div>
+          <div style="position:absolute; bottom:6px; right:18px; display:flex; align-items:center; gap:10px; padding:13px 16px; border-radius:13px; border:1px solid rgba(255,255,255,0.08); background:#121212; box-shadow:0 20px 50px rgba(0,0,0,0.45)">
+            <span style="width:34px; height:34px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 6px,#1b1b1b 6px 12px); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:rgba(244,242,238,0.7)">АС</span>
+            <span>
+              <span style="display:block; font-size:12.5px; font-weight:600">Артём Северов</span>
+              <span style="display:block; font-size:11px; color:rgba(244,242,238,0.45)">ваш наставник · online</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ======================= DASHBOARD ======================= -->
+    <sc-if value="{{ show.dashboard }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Dashboard" style="padding:46px 56px 60px; max-width:1280px; margin:0 auto; animation:fadeIn .4s ease both">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:38px">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:12px">ЧЕТВЕРГ, 19 ИЮНЯ · 21:00</div>
+          <h1 style="font-family:'Lora',serif; font-weight:500; font-size:40px; letter-spacing:-0.02em; margin:0; color:#F7F5F1">С возвращением, <span style="font-style:italic">Марк</span></h1>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; padding:9px 14px; border-radius:100px; border:1px solid rgba(255,255,255,0.08); font-size:13px; color:rgba(244,242,238,0.6)">
+          <span style="width:7px; height:7px; border-radius:50%; background:var(--accent,#E8835A)"></span>9 дней подряд
+        </div>
+      </div>
+
+      <div class="grid-bento" style="display:grid; grid-template-columns:repeat(12,1fr); gap:18px">
+
+        <!-- Progress (large) -->
+        <div style="grid-column:span 7; grid-row:span 2; border-radius:18px; border:1px solid rgba(255,255,255,0.07); background:#111111; padding:30px 32px; display:flex; flex-direction:column">
+          <div style="display:flex; align-items:center; justify-content:space-between">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">ПРОГРЕСС КУРСА</span>
+            <span style="font-size:12.5px; color:rgba(244,242,238,0.45)">Модуль 3 из 7</span>
+          </div>
+          <div style="display:flex; align-items:flex-end; gap:16px; margin:26px 0 4px">
+            <span style="font-family:'Lora',serif; font-size:76px; line-height:0.9; color:#F7F5F1; letter-spacing:-0.02em">38<span style="font-size:34px; color:rgba(244,242,238,0.4)">%</span></span>
+            <span style="font-size:14px; color:rgba(244,242,238,0.5); padding-bottom:12px">пройдено программы</span>
+          </div>
+          <div style="display:flex; gap:5px; margin-top:24px">
+            <span style="flex:1; height:6px; border-radius:4px; background:var(--accent,#E8835A)"></span>
+            <span style="flex:1; height:6px; border-radius:4px; background:var(--accent,#E8835A)"></span>
+            <span style="flex:1; height:6px; border-radius:4px; background:linear-gradient(90deg,var(--accent,#E8835A) 55%, rgba(255,255,255,0.08) 55%)"></span>
+            <span style="flex:1; height:6px; border-radius:4px; background:rgba(255,255,255,0.07)"></span>
+            <span style="flex:1; height:6px; border-radius:4px; background:rgba(255,255,255,0.07)"></span>
+            <span style="flex:1; height:6px; border-radius:4px; background:rgba(255,255,255,0.07)"></span>
+            <span style="flex:1; height:6px; border-radius:4px; background:rgba(255,255,255,0.07)"></span>
+          </div>
+          <div style="flex:1"></div>
+          <div style="display:flex; gap:36px; margin-top:30px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.06)">
+            <div><div style="font-family:'Lora',serif; font-size:26px; color:#F7F5F1">24<span style="font-size:16px; color:rgba(244,242,238,0.35)">/58</span></div><div style="font-size:12px; color:rgba(244,242,238,0.45); margin-top:5px">уроков пройдено</div></div>
+            <div><div style="font-family:'Lora',serif; font-size:26px; color:#F7F5F1">18 ч</div><div style="font-size:12px; color:rgba(244,242,238,0.45); margin-top:5px">в обучении</div></div>
+            <div><div style="font-family:'Lora',serif; font-size:26px; color:#F7F5F1">8,7</div><div style="font-size:12px; color:rgba(244,242,238,0.45); margin-top:5px">средний балл</div></div>
+          </div>
+        </div>
+
+        <!-- Next lesson (media) -->
+        <div onClick="{{ goLesson }}" style="grid-column:span 5; border-radius:16px; border:1px solid rgba(255,255,255,0.07); background:#111111; overflow:hidden; cursor:pointer; display:flex; flex-direction:column; transition:border-color .2s,transform .2s" style-hover="border-color:rgba(255,255,255,0.16); transform:translateY(-2px)">
+          <div style="position:relative; height:148px; background:repeating-linear-gradient(135deg,#161616 0 11px,#121212 11px 22px); border-bottom:1px solid rgba(255,255,255,0.06)">
+            <div style="position:absolute; top:14px; left:16px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--accent,#E8835A)">▸ ПРОДОЛЖИТЬ</div>
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:44px; height:44px; border-radius:50%; background:rgba(244,242,238,0.92); display:flex; align-items:center; justify-content:center"><span style="border-left:12px solid #0B0B0B; border-top:8px solid transparent; border-bottom:8px solid transparent; margin-left:3px"></span></div>
+          </div>
+          <div style="padding:20px 22px">
+            <div style="font-size:12px; color:rgba(244,242,238,0.4); margin-bottom:7px">Модуль 3 · Урок 2</div>
+            <div style="font-family:'Lora',serif; font-size:21px; color:#F7F5F1; line-height:1.25">Цветовые системы в интерфейсах</div>
+            <div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:10px">14 минут · видео + разбор</div>
+          </div>
+        </div>
+
+        <!-- Upcoming call -->
+        <div style="grid-column:span 5; border-radius:16px; border:1px solid rgba(255,255,255,0.07); background:linear-gradient(160deg,#15110f,#111111); padding:24px; display:flex; flex-direction:column; justify-content:space-between">
+          <div>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">БЛИЖАЙШИЙ СОЗВОН</span>
+            <div style="font-family:'Lora',serif; font-size:23px; color:#F7F5F1; margin:14px 0 6px">Чт, 21 июня · 19:00</div>
+            <div style="font-size:13px; color:rgba(244,242,238,0.5)">Групповой разбор домашних работ</div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:22px">
+            <div style="display:flex; align-items:center; gap:9px">
+              <span style="width:26px; height:26px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 6px,#1b1b1b 6px 12px); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:rgba(244,242,238,0.7)">АС</span>
+              <span style="font-size:12.5px; color:rgba(244,242,238,0.6)">Артём Северов</span>
+            </div>
+            <button style="padding:8px 16px; border:1px solid rgba(255,255,255,0.14); border-radius:9px; background:transparent; color:#F4F2EE; font-family:'Onest',sans-serif; font-size:13px; font-weight:500; cursor:pointer" style-hover="background:rgba(255,255,255,0.05)">Подключиться</button>
+          </div>
+        </div>
+
+        <!-- Recent comments -->
+        <div style="grid-column:span 7; border-radius:16px; border:1px solid rgba(255,255,255,0.07); background:#111111; padding:26px 28px">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">ОБРАТНАЯ СВЯЗЬ НАСТАВНИКА</span>
+            <span onClick="{{ goReview }}" style="font-size:12.5px; color:rgba(244,242,238,0.5); cursor:pointer" style-hover="color:#F4F2EE">все →</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:18px">
+            <sc-for list="{{ comments }}" as="c" hint-placeholder-count="2">
+              <div style="display:flex; gap:14px">
+                <span style="flex:none; width:32px; height:32px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 6px,#1b1b1b 6px 12px); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:rgba(244,242,238,0.7)">{{ c.init }}</span>
+                <div style="flex:1; min-width:0">
+                  <div style="display:flex; align-items:center; gap:9px; margin-bottom:5px"><span style="font-size:13px; font-weight:600">{{ c.who }}</span><span style="width:5px; height:5px; border-radius:50%; background:{{ c.dot }}"></span><span style="font-size:11.5px; color:rgba(244,242,238,0.35)">{{ c.time }}</span></div>
+                  <div style="font-size:13.5px; line-height:1.55; color:rgba(244,242,238,0.62)">{{ c.text }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- Streak / portfolio mini -->
+        <div onClick="{{ goPortfolio }}" style="grid-column:span 5; border-radius:16px; border:1px solid rgba(255,255,255,0.07); background:#111111; padding:26px 28px; cursor:pointer; display:flex; flex-direction:column; justify-content:space-between" style-hover="border-color:rgba(255,255,255,0.16)">
+          <div style="display:flex; align-items:center; justify-content:space-between">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">ПОРТФОЛИО</span>
+            <span style="font-size:12.5px; color:rgba(244,242,238,0.5)">→</span>
+          </div>
+          <div style="display:flex; gap:9px; margin:22px 0">
+            <span style="flex:1; height:64px; border-radius:9px; background:repeating-linear-gradient(135deg,#181818 0 8px,#131313 8px 16px); border:1px solid rgba(255,255,255,0.06)"></span>
+            <span style="flex:1; height:64px; border-radius:9px; background:repeating-linear-gradient(135deg,#181818 0 8px,#131313 8px 16px); border:1px solid rgba(255,255,255,0.06)"></span>
+            <span style="flex:1; height:64px; border-radius:9px; border:1px dashed rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; color:rgba(244,242,238,0.3); font-size:20px">+</span>
+          </div>
+          <div style="font-size:13px; color:rgba(244,242,238,0.5)"><span style="color:#F4F2EE; font-weight:600">2 кейса</span> готовы · ещё 2 впереди</div>
+        </div>
+
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ======================= COURSE / ROADMAP ======================= -->
+    <sc-if value="{{ show.course }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Course" style="padding:46px 56px 80px; max-width:1180px; margin:0 auto; animation:fadeIn .4s ease both">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:54px">
+        <div style="max-width:560px">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.06em; color:var(--accent,#E8835A); margin-bottom:16px">ПРОГРАММА · ПОТОК 7</div>
+          <h1 style="font-family:'Lora',serif; font-weight:500; font-size:46px; line-height:1.08; letter-spacing:-0.02em; margin:0 0 16px; color:#F7F5F1">Дорожная карта <span style="font-style:italic">дизайнера</span></h1>
+          <p style="font-size:15.5px; line-height:1.6; color:rgba(244,242,238,0.5); margin:0">Семь модулей выстроены так, как растёт настоящий продакт-дизайнер — от восприятия формы к системному мышлению и портфолио.</p>
+        </div>
+        <div style="text-align:right; flex:none">
+          <div style="font-family:'Lora',serif; font-size:44px; color:#F7F5F1; line-height:1">2<span style="color:rgba(244,242,238,0.3)">/7</span></div>
+          <div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:6px">модулей завершено</div>
+        </div>
+      </div>
+
+      <div style="position:relative">
+        <div style="position:absolute; left:23px; top:14px; bottom:24px; width:1.5px; background:linear-gradient(180deg, rgba(143,169,140,0.5), var(--accent,#E8835A) 32%, rgba(255,255,255,0.08) 46%)"></div>
+        <div style="display:flex; flex-direction:column; gap:14px">
+          <sc-for list="{{ modules }}" as="m" hint-placeholder-count="7">
+            <div onClick="{{ m.onClick }}" style="position:relative; display:flex; gap:26px; opacity:{{ m.op }}">
+              <div style="flex:none; position:relative; z-index:1">
+                <div style="width:48px; height:48px; border-radius:50%; background:{{ m.dotBg }}; border:1px solid {{ m.dot }}; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:13px; color:{{ m.dot }}; background-color:#0B0B0B">{{ m.num }}</div>
+              </div>
+              <div style="flex:1; border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:22px 26px; transition:border-color .2s" style-hover="border-color:rgba(255,255,255,0.14)">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:18px">
+                  <div style="font-family:'Lora',serif; font-size:23px; color:#F7F5F1; line-height:1.2">{{ m.title }}</div>
+                  <div style="flex:none; display:inline-flex; align-items:center; gap:7px; padding:5px 11px; border-radius:100px; border:1px solid rgba(255,255,255,0.08); font-size:11.5px; font-weight:500; color:{{ m.sc }}"><span style="width:6px; height:6px; border-radius:50%; background:{{ m.dot }}"></span>{{ m.label }}</div>
+                </div>
+                <div style="font-size:14px; line-height:1.55; color:rgba(244,242,238,0.5); margin:10px 0 0; max-width:560px">{{ m.desc }}</div>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-top:18px">
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:rgba(244,242,238,0.4)">{{ m.meta }}</div>
+                  <sc-if value="{{ m.isActive }}" hint-placeholder-val="{{ false }}"><button style="padding:9px 18px; border:none; border-radius:9px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:13px; font-weight:600; cursor:pointer">Продолжить урок →</button></sc-if>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ======================= LESSON ======================= -->
+    <sc-if value="{{ show.lesson }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Lesson" style="padding:34px 0 80px; animation:fadeIn .4s ease both">
+      <div class="split" style="display:flex; gap:48px; max-width:1240px; margin:0 auto; padding:0 56px; align-items:flex-start">
+
+        <!-- main column -->
+        <div class="main" style="flex:1; min-width:0; max-width:720px">
+          <div style="display:flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:rgba(244,242,238,0.42); margin-bottom:22px">
+            <span style="cursor:pointer" style-hover="color:#F4F2EE">Модуль 03 — Цвет и контраст</span><span>/</span><span style="color:var(--accent,#E8835A)">Урок 2</span>
+          </div>
+
+          <!-- player -->
+          <div style="position:relative; aspect-ratio:16/9; width:100%; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); background:repeating-linear-gradient(135deg,#161616 0 13px,#111111 13px 26px)">
+            <div style="position:absolute; top:16px; left:18px; font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.4)">// видео урока · 16:9</div>
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:62px; height:62px; border-radius:50%; background:rgba(244,242,238,0.94); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform .2s" style-hover="transform:translate(-50%,-50%) scale(1.07)"><span style="border-left:17px solid #0B0B0B; border-top:11px solid transparent; border-bottom:11px solid transparent; margin-left:4px"></span></div>
+            <div style="position:absolute; left:0; right:0; bottom:0; padding:16px 18px; background:linear-gradient(0deg, rgba(0,0,0,0.6), transparent)">
+              <div style="height:3px; border-radius:3px; background:rgba(255,255,255,0.18); position:relative"><span style="position:absolute; left:0; top:0; bottom:0; width:32%; background:var(--accent,#E8835A); border-radius:3px"></span><span style="position:absolute; left:32%; top:50%; width:11px; height:11px; margin:-5.5px 0 0 -5px; border-radius:50%; background:#F4F2EE"></span></div>
+              <div style="display:flex; align-items:center; gap:16px; margin-top:11px; color:rgba(244,242,238,0.85)">
+                <span style="font-size:13px">⏸</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:rgba(244,242,238,0.65)">04:31 / 14:08</span>
+                <span style="flex:1"></span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.55); border:1px solid rgba(255,255,255,0.16); padding:2px 7px; border-radius:6px">1.0×</span>
+                <span style="font-size:13px; color:rgba(244,242,238,0.6)">⤢</span>
+              </div>
+            </div>
+          </div>
+
+          <h1 style="font-family:'Lora',serif; font-weight:500; font-size:38px; line-height:1.12; letter-spacing:-0.02em; margin:30px 0 0; color:#F7F5F1">Цветовые системы в&nbsp;интерфейсах</h1>
+          <div style="display:flex; align-items:center; gap:16px; margin:18px 0 36px; font-size:13px; color:rgba(244,242,238,0.45)">
+            <span style="display:flex; align-items:center; gap:8px"><span style="width:22px; height:22px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 5px,#1b1b1b 5px 10px); border:1px solid rgba(255,255,255,0.1); display:inline-flex; align-items:center; justify-content:center; font-size:9px; font-weight:600; color:rgba(244,242,238,0.7)">АС</span>Артём Северов</span>
+            <span style="width:3px; height:3px; border-radius:50%; background:rgba(244,242,238,0.3)"></span>
+            <span>14 минут видео</span>
+            <span style="width:3px; height:3px; border-radius:50%; background:rgba(244,242,238,0.3)"></span>
+            <span>~9 минут чтения</span>
+          </div>
+
+          <div style="font-size:16.5px; line-height:1.75; color:rgba(244,242,238,0.74)">
+            <p style="margin:0 0 22px">Хороший цвет в интерфейсе — это не палитра «красивых» оттенков, а система решений. Прежде чем выбрать акцент, мы определяем роли: что является фоном, что несёт текст, что отвечает за действие, а что — за статус.</p>
+            <h2 style="font-family:'Lora',serif; font-weight:500; font-size:25px; color:#F7F5F1; margin:38px 0 14px; letter-spacing:-0.01em">От оттенков к токенам</h2>
+            <p style="margin:0 0 22px">Токен — это имя для решения, а не для цвета. <span style="color:#F4F2EE">surface/primary</span> может быть почти чёрным сегодня и тёплым графитом завтра — но смысл останется. Именно поэтому профессиональные продукты переживают редизайны без переписывания половины кода.</p>
+            <div style="border-left:2px solid var(--accent,#E8835A); padding:4px 0 4px 22px; margin:30px 0; font-family:'Lora',serif; font-style:italic; font-size:20px; line-height:1.5; color:#F7F5F1">«Если вы не можете назвать цвет словом-ролью — у вас ещё нет системы, у вас есть набор пикселей.»</div>
+            <p style="margin:0 0 22px">Дальше в уроке разберём контраст: почему 4.5:1 — это не догма, а минимум, и как тёплый акцент работает на тёмном фоне, не выжигая глаза.</p>
+            <div style="aspect-ratio:16/7; border-radius:12px; border:1px solid rgba(255,255,255,0.07); background:repeating-linear-gradient(135deg,#161616 0 11px,#121212 11px 22px); display:flex; align-items:flex-end; padding:14px; margin:8px 0 4px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.4)">// схема: роли цвета в тёмной теме</span></div>
+          </div>
+        </div>
+
+        <!-- sticky side -->
+        <aside class="side" style="flex:none; width:330px; position:sticky; top:34px; display:flex; flex-direction:column; gap:16px">
+          <div style="border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:20px">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:16px">МАТЕРИАЛЫ УРОКА</div>
+            <div style="display:flex; flex-direction:column; gap:4px">
+              <sc-for list="{{ materials }}" as="f" hint-placeholder-count="3">
+                <div style="display:flex; align-items:center; gap:12px; padding:11px 10px; border-radius:10px; cursor:pointer; transition:background .15s" style-hover="background:rgba(255,255,255,0.04)">
+                  <span style="flex:none; width:34px; height:34px; border-radius:8px; border:1px solid rgba(255,255,255,0.09); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:500; color:{{ f.tc }}">{{ f.type }}</span>
+                  <span style="flex:1; min-width:0"><span style="display:block; font-size:13px; font-weight:500; color:#F4F2EE; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ f.name }}</span><span style="display:block; font-size:11px; color:rgba(244,242,238,0.4); margin-top:2px">{{ f.meta }}</span></span>
+                  <span style="flex:none; color:rgba(244,242,238,0.35); font-size:14px">↓</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:20px">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:16px">ЧЕК-ЛИСТ ПРАКТИКИ</div>
+            <div style="display:flex; flex-direction:column; gap:13px">
+              <sc-for list="{{ checklist }}" as="c" hint-placeholder-count="4">
+                <div style="display:flex; align-items:flex-start; gap:11px; opacity:{{ c.op }}">
+                  <span style="flex:none; width:18px; height:18px; border-radius:6px; margin-top:1px; border:1px solid {{ c.bd }}; background:{{ c.bg }}; display:flex; align-items:center; justify-content:center; font-size:10px; color:#0B0B0B">{{ c.mark }}</span>
+                  <span style="font-size:13px; line-height:1.45; color:{{ c.color }}">{{ c.t }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <button onClick="{{ goHomework }}" style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border:none; border-radius:13px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:14.5px; font-weight:600; cursor:pointer; transition:transform .15s" style-hover="transform:translateY(-2px)">К домашнему заданию <span style="font-size:13px">→</span></button>
+        </aside>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ======================= HOMEWORK ======================= -->
+    <sc-if value="{{ show.homework }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Homework" style="padding:40px 0 80px; animation:fadeIn .4s ease both">
+      <div class="split" style="display:flex; gap:48px; max-width:1240px; margin:0 auto; padding:0 56px; align-items:flex-start">
+
+        <div class="main" style="flex:1; min-width:0; max-width:720px">
+          <div style="display:flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:rgba(244,242,238,0.42); margin-bottom:20px">
+            <span>Домашка</span><span>/</span><span style="color:var(--accent,#E8835A)">Модуль 03</span>
+          </div>
+          <div style="display:inline-flex; align-items:center; gap:8px; padding:5px 12px; border-radius:100px; background:rgba(232,131,90,0.12); border:1px solid rgba(232,131,90,0.25); font-size:12px; font-weight:500; color:var(--accent,#E8835A); margin-bottom:20px"><span style="width:6px; height:6px; border-radius:50%; background:var(--accent,#E8835A)"></span>В работе</div>
+          <h1 style="font-family:'Lora',serif; font-weight:500; font-size:38px; line-height:1.12; letter-spacing:-0.02em; margin:0 0 28px; color:#F7F5F1">Цветовая система для&nbsp;экрана продукта</h1>
+
+          <!-- Notion-like property rows -->
+          <div style="border-top:1px solid rgba(255,255,255,0.06); margin-bottom:34px">
+            <div style="display:flex; align-items:center; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.05)"><span style="width:150px; flex:none; font-size:13px; color:rgba(244,242,238,0.4)">Дедлайн</span><span style="font-size:13.5px; color:#F4F2EE">23 июня, 23:59 · осталось 4 дня</span></div>
+            <div style="display:flex; align-items:center; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.05)"><span style="width:150px; flex:none; font-size:13px; color:rgba(244,242,238,0.4)">Наставник</span><span style="display:flex; align-items:center; gap:8px; font-size:13.5px; color:#F4F2EE"><span style="width:20px; height:20px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 5px,#1b1b1b 5px 10px); border:1px solid rgba(255,255,255,0.1); display:inline-flex; align-items:center; justify-content:center; font-size:8.5px; font-weight:600; color:rgba(244,242,238,0.7)">АС</span>Артём Северов</span></div>
+            <div style="display:flex; align-items:center; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.05)"><span style="width:150px; flex:none; font-size:13px; color:rgba(244,242,238,0.4)">Сложность</span><span style="display:flex; gap:4px; align-items:center"><span style="width:18px; height:5px; border-radius:3px; background:var(--accent,#E8835A)"></span><span style="width:18px; height:5px; border-radius:3px; background:var(--accent,#E8835A)"></span><span style="width:18px; height:5px; border-radius:3px; background:rgba(255,255,255,0.1)"></span><span style="font-size:12.5px; color:rgba(244,242,238,0.5); margin-left:6px">средняя</span></span></div>
+            <div style="display:flex; align-items:center; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.05)"><span style="width:150px; flex:none; font-size:13px; color:rgba(244,242,238,0.4)">Формат сдачи</span><span style="font-size:13.5px; color:#F4F2EE">Figma-файл или PDF · до 25 МБ</span></div>
+          </div>
+
+          <div style="font-size:16px; line-height:1.7; color:rgba(244,242,238,0.72)">
+            <p style="margin:0 0 18px">Соберите цветовую систему для одного экрана продукта (на ваш выбор: дашборд, плеер или профиль). Опирайтесь на разобранный в уроке подход — роли важнее оттенков.</p>
+            <h2 style="font-family:'Lora',serif; font-weight:500; font-size:22px; color:#F7F5F1; margin:30px 0 14px">Что нужно сделать</h2>
+            <ul style="margin:0; padding-left:20px; line-height:1.85"><li>Определите базовый фон и 2 уровня поверхностей.</li><li>Задайте акцент и проверьте его контраст на фоне.</li><li>Назовите токены по роли и примените их на экране.</li></ul>
+          </div>
+
+          <h2 style="font-family:'Lora',serif; font-weight:500; font-size:22px; color:#F7F5F1; margin:38px 0 18px">Критерии оценки</h2>
+          <div style="display:flex; flex-direction:column; gap:2px">
+            <sc-for list="{{ criteria }}" as="c" hint-placeholder-count="4">
+              <div style="display:flex; align-items:center; gap:18px; padding:15px 16px; border:1px solid rgba(255,255,255,0.06); border-radius:11px; background:#0F0F0F">
+                <span style="flex:none; width:42px; font-family:'Lora',serif; font-size:20px; color:var(--accent,#E8835A)">{{ c.w }}<span style="font-size:11px; color:rgba(244,242,238,0.3)">%</span></span>
+                <span style="flex:1"><span style="display:block; font-size:14px; font-weight:600; color:#F4F2EE">{{ c.t }}</span><span style="display:block; font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:3px">{{ c.d }}</span></span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- sticky upload -->
+        <aside class="side" style="flex:none; width:330px; position:sticky; top:34px; display:flex; flex-direction:column; gap:16px">
+          <div style="border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:20px">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:14px">ВАША РАБОТА</div>
+            <div style="border:1.5px dashed rgba(255,255,255,0.16); border-radius:13px; padding:30px 18px; text-align:center; cursor:pointer; transition:border-color .2s,background .2s" style-hover="border-color:var(--accent,#E8835A); background:rgba(232,131,90,0.04)">
+              <div style="width:42px; height:42px; margin:0 auto 14px; border-radius:11px; border:1px solid rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-size:18px; color:rgba(244,242,238,0.55)">↥</div>
+              <div style="font-size:14px; font-weight:600; color:#F4F2EE">Перетащите файл сюда</div>
+              <div style="font-size:12px; color:rgba(244,242,238,0.42); margin-top:6px">или нажмите, чтобы выбрать</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; margin-top:14px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.05)">
+              <span style="flex:none; width:30px; height:30px; border-radius:7px; border:1px solid rgba(255,255,255,0.09); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--accent,#E8835A)">FIG</span>
+              <span style="flex:1; min-width:0"><span style="display:block; font-size:12.5px; color:#F4F2EE; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">color-system-v2.fig</span><span style="display:block; font-size:11px; color:rgba(244,242,238,0.4)">2.1 МБ · черновик</span></span>
+              <span style="flex:none; color:rgba(244,242,238,0.35); cursor:pointer">✕</span>
+            </div>
+            <button style="width:100%; margin-top:14px; padding:14px; border:none; border-radius:11px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:14px; font-weight:600; cursor:pointer" style-hover="opacity:0.92">Отправить на проверку</button>
+            <div style="font-size:11.5px; color:rgba(244,242,238,0.35); text-align:center; margin-top:10px">После отправки наставник получит уведомление</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ======================= REVIEW ======================= -->
+    <sc-if value="{{ show.review }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Review" style="padding:40px 0 80px; animation:fadeIn .4s ease both">
+      <div style="max-width:1240px; margin:0 auto; padding:0 56px">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px; margin-bottom:34px">
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:rgba(244,242,238,0.42); margin-bottom:14px">ПРОВЕРКА · ДЗ МОДУЛЯ 3</div>
+            <h1 style="font-family:'Lora',serif; font-weight:500; font-size:36px; line-height:1.1; letter-spacing:-0.02em; margin:0; color:#F7F5F1">Цветовая система для экрана продукта</h1>
+          </div>
+          <div style="flex:none; display:inline-flex; align-items:center; gap:9px; padding:9px 16px; border-radius:100px; background:rgba(232,131,90,0.1); border:1px solid rgba(232,131,90,0.28); font-size:13px; font-weight:600; color:var(--accent,#E8835A)"><span style="width:7px; height:7px; border-radius:50%; background:var(--accent,#E8835A)"></span>Требует доработки</div>
+        </div>
+
+        <div class="split" style="display:flex; gap:40px; align-items:flex-start">
+
+          <!-- work preview with pins -->
+          <div class="main" style="flex:1; min-width:0; position:sticky; top:34px">
+            <div style="position:relative; aspect-ratio:16/11; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.09); background:repeating-linear-gradient(135deg,#161616 0 13px,#111111 13px 26px)">
+              <div style="position:absolute; top:16px; left:18px; font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.4)">// загруженная работа · color-system-v2.fig</div>
+              <sc-for list="{{ reviewComments }}" as="p" hint-placeholder-count="3">
+                <div style="position:absolute; top:{{ p.top }}; left:{{ p.left }}; transform:translate(-50%,-50%); width:26px; height:26px; border-radius:50%; background:{{ p.sc }}; color:#0B0B0B; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; box-shadow:0 0 0 4px rgba(11,11,11,0.6); cursor:pointer">{{ p.n }}</div>
+              </sc-for>
+            </div>
+            <div style="display:flex; align-items:center; gap:9px; margin-top:14px; font-size:12.5px; color:rgba(244,242,238,0.4)"><span style="width:20px; height:20px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 5px,#1b1b1b 5px 10px); border:1px solid rgba(255,255,255,0.1)"></span>Сдано Марком · вчера, 22:14 · 2.1 МБ</div>
+          </div>
+
+          <!-- review panel -->
+          <div class="side" style="flex:none; width:430px; display:flex; flex-direction:column; gap:18px">
+
+            <!-- grade card -->
+            <div style="border:1px solid rgba(255,255,255,0.08); border-radius:16px; background:linear-gradient(160deg,#141210,#101010); padding:26px">
+              <div style="display:flex; align-items:center; justify-content:space-between">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">ПРЕДВАРИТЕЛЬНАЯ ОЦЕНКА</div>
+                <div style="font-size:12px; color:rgba(244,242,238,0.4)">после доработки → финальная</div>
+              </div>
+              <div style="display:flex; align-items:flex-end; gap:14px; margin:16px 0 22px">
+                <span style="font-family:'Lora',serif; font-size:68px; line-height:0.85; color:#F7F5F1; letter-spacing:-0.02em">7,5</span>
+                <span style="font-size:22px; color:rgba(244,242,238,0.35); padding-bottom:8px">/ 10</span>
+                <span style="flex:1"></span>
+                <span style="font-size:13px; color:rgba(244,242,238,0.55); padding-bottom:10px; text-align:right; max-width:150px">Хорошая база, осталось навести систему</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:11px">
+                <sc-for list="{{ gradeRows }}" as="g" hint-placeholder-count="4">
+                  <div style="display:flex; align-items:center; gap:14px">
+                    <span style="flex:none; width:170px; font-size:12.5px; color:rgba(244,242,238,0.55)">{{ g.t }}</span>
+                    <span style="flex:1; height:5px; border-radius:3px; background:rgba(255,255,255,0.07); position:relative; overflow:hidden"><span style="position:absolute; left:0; top:0; bottom:0; width:{{ g.w }}; background:{{ g.c }}; border-radius:3px"></span></span>
+                    <span style="flex:none; width:34px; text-align:right; font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.5)">{{ g.w }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <!-- mentor verdict -->
+            <div style="display:flex; gap:13px; padding:18px 20px; border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:#101010">
+              <span style="flex:none; width:32px; height:32px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 6px,#1b1b1b 6px 12px); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:rgba(244,242,238,0.7)">АС</span>
+              <div><div style="font-size:13px; font-weight:600; margin-bottom:6px">Артём Северов</div><div style="font-size:13.5px; line-height:1.6; color:rgba(244,242,238,0.65)">Видно, что подход понят — особенно с акцентом. Поправь два момента ниже, и это будет уверенная девятка. Жду вторую версию.</div></div>
+            </div>
+
+            <!-- review comments -->
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin:6px 2px 0">ЗАМЕЧАНИЯ ПО МАКЕТУ · 3</div>
+            <sc-for list="{{ reviewComments }}" as="c" hint-placeholder-count="3">
+              <div style="border:1px solid rgba(255,255,255,0.07); border-radius:13px; background:#0F0F0F; padding:16px 18px">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:9px">
+                  <span style="flex:none; width:22px; height:22px; border-radius:50%; background:{{ c.sc }}; color:#0B0B0B; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700">{{ c.n }}</span>
+                  <span style="font-size:13px; font-weight:600; color:#F4F2EE">{{ c.tag }}</span>
+                  <span style="flex:1"></span>
+                  <span style="font-size:11px; font-weight:500; color:{{ c.sc }}; padding:3px 9px; border-radius:100px; background:{{ c.svBg }}">{{ c.sev }}</span>
+                </div>
+                <div style="font-size:13.5px; line-height:1.6; color:rgba(244,242,238,0.62)">{{ c.text }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ======================= CHAT ======================= -->
+    <sc-if value="{{ show.chat }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Chat" style="height:100vh; display:flex; animation:fadeIn .4s ease both">
+
+      <!-- thread -->
+      <div style="flex:1; min-width:0; display:flex; flex-direction:column; height:100%">
+        <div style="flex:none; display:flex; align-items:center; gap:13px; padding:18px 32px; border-bottom:1px solid rgba(255,255,255,0.06)">
+          <span style="width:38px; height:38px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 6px,#1b1b1b 6px 12px); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; color:rgba(244,242,238,0.7)">АС</span>
+          <div style="flex:1"><div style="font-size:14.5px; font-weight:600">Артём Северов</div><div style="font-size:12px; color:#8FA98C; display:flex; align-items:center; gap:6px"><span style="width:6px; height:6px; border-radius:50%; background:#8FA98C"></span>в сети</div></div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.4)">наставник потока 7</span>
+        </div>
+
+        <div style="flex:1; overflow-y:auto; padding:30px 32px; display:flex; flex-direction:column; gap:12px">
+          <div style="align-self:center; font-size:11.5px; color:rgba(244,242,238,0.35); padding:4px 12px; border-radius:100px; background:rgba(255,255,255,0.04); margin-bottom:6px">Сегодня</div>
+          <sc-for list="{{ chatMessages }}" as="m" hint-placeholder-count="5">
+            <div style="display:flex; flex-direction:column; align-items:{{ m.align }}; max-width:100%">
+              <div style="max-width:64%; padding:11px 15px; border-radius:{{ m.radius }}; background:{{ m.bg }}; color:{{ m.color }}; font-size:14px; line-height:1.5">
+                {{ m.text }}
+                <sc-if value="{{ m.file }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; align-items:center; gap:10px; margin-top:10px; padding:9px 11px; border-radius:9px; background:rgba(0,0,0,0.18); border:1px solid rgba(255,255,255,0.06)">
+                    <span style="flex:none; width:28px; height:28px; border-radius:7px; border:1px solid rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8.5px; color:var(--accent,#E8835A)">FIG</span>
+                    <span style="flex:1; min-width:0"><span style="display:block; font-size:12.5px; font-weight:600">{{ m.file.name }}</span><span style="display:block; font-size:11px; opacity:0.6">{{ m.file.meta }}</span></span>
+                    <span style="flex:none; opacity:0.55">↓</span>
+                  </div>
+                </sc-if>
+              </div>
+              <span style="font-size:10.5px; color:rgba(244,242,238,0.3); margin:5px 4px 0">{{ m.time }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="flex:none; padding:16px 32px 22px">
+          <div style="display:flex; align-items:center; gap:12px; padding:8px 8px 8px 18px; border:1px solid rgba(255,255,255,0.1); border-radius:14px; background:#101010">
+            <span style="color:rgba(244,242,238,0.4); cursor:pointer; font-size:16px">＋</span>
+            <span style="flex:1; font-size:14px; color:rgba(244,242,238,0.35)">Написать сообщение…</span>
+            <button style="width:36px; height:36px; border:none; border-radius:10px; background:#F4F2EE; color:#0B0B0B; font-size:15px; cursor:pointer">↑</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- mentor info -->
+      <aside style="flex:none; width:312px; border-left:1px solid rgba(255,255,255,0.06); padding:34px 26px; overflow-y:auto">
+        <div style="display:flex; flex-direction:column; align-items:center; text-align:center; padding-bottom:26px; border-bottom:1px solid rgba(255,255,255,0.06)">
+          <span style="width:76px; height:76px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 8px,#1b1b1b 8px 16px); border:1px solid rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; color:rgba(244,242,238,0.7)">АС</span>
+          <div style="font-family:'Lora',serif; font-size:21px; margin:15px 0 4px; color:#F7F5F1">Артём Северов</div>
+          <div style="font-size:12.5px; color:rgba(244,242,238,0.45)">Product Designer · ex-Lead</div>
+        </div>
+        <div style="display:flex; padding:22px 0; border-bottom:1px solid rgba(255,255,255,0.06)">
+          <div style="flex:1; text-align:center"><div style="font-family:'Lora',serif; font-size:22px; color:#F7F5F1">12</div><div style="font-size:11px; color:rgba(244,242,238,0.4); margin-top:4px">учеников</div></div>
+          <div style="flex:1; text-align:center; border-left:1px solid rgba(255,255,255,0.06)"><div style="font-family:'Lora',serif; font-size:22px; color:#F7F5F1">~2 ч</div><div style="font-size:11px; color:rgba(244,242,238,0.4); margin-top:4px">ответ</div></div>
+          <div style="flex:1; text-align:center; border-left:1px solid rgba(255,255,255,0.06)"><div style="font-family:'Lora',serif; font-size:22px; color:#F7F5F1">9 лет</div><div style="font-size:11px; color:rgba(244,242,238,0.4); margin-top:4px">в дизайне</div></div>
+        </div>
+        <div style="padding:22px 0; border-bottom:1px solid rgba(255,255,255,0.06)">
+          <div style="font-size:13.5px; line-height:1.65; color:rgba(244,242,238,0.6)">Ведёт студентов от первых сеток до системного мышления. Любит спрашивать «почему именно так» — и это работает.</div>
+        </div>
+        <div style="padding-top:22px">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:14px">ОБЩИЕ ФАЙЛЫ · 3</div>
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <div style="display:flex; align-items:center; gap:11px"><span style="flex:none; width:30px; height:30px; border-radius:7px; border:1px solid rgba(255,255,255,0.09); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8.5px; color:var(--accent,#E8835A)">FIG</span><span style="flex:1; font-size:12.5px; color:rgba(244,242,238,0.7); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">contrast-example.fig</span></div>
+            <div style="display:flex; align-items:center; gap:11px"><span style="flex:none; width:30px; height:30px; border-radius:7px; border:1px solid rgba(255,255,255,0.09); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8.5px; color:#C98B6B">PDF</span><span style="flex:1; font-size:12.5px; color:rgba(244,242,238,0.7); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">конспект-цвет.pdf</span></div>
+            <div style="display:flex; align-items:center; gap:11px"><span style="flex:none; width:30px; height:30px; border-radius:7px; border:1px solid rgba(255,255,255,0.09); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8.5px; color:#8FA98C">URL</span><span style="flex:1; font-size:12.5px; color:rgba(244,242,238,0.7); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">референсы-палитры</span></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+    </sc-if>
+
+    <!-- ======================= PORTFOLIO ======================= -->
+    <sc-if value="{{ show.portfolio }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Portfolio" style="padding:46px 56px 80px; max-width:1240px; margin:0 auto; animation:fadeIn .4s ease both">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:42px">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.06em; color:var(--accent,#E8835A); margin-bottom:14px">ПОРТФОЛИО · МАРК КРАВЦОВ</div>
+          <h1 style="font-family:'Lora',serif; font-weight:500; font-size:44px; letter-spacing:-0.02em; margin:0; color:#F7F5F1">Работы и <span style="font-style:italic">кейсы</span></h1>
+        </div>
+        <div style="display:flex; gap:10px"><button style="padding:10px 16px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:transparent; color:rgba(244,242,238,0.6); font-family:'Onest',sans-serif; font-size:13px; cursor:pointer">Поделиться</button><button style="padding:10px 16px; border:none; border-radius:10px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:13px; font-weight:600; cursor:pointer">+ Новый кейс</button></div>
+      </div>
+
+      <div class="grid-bento" style="display:grid; grid-template-columns:repeat(12,1fr); gap:18px">
+        <sc-for list="{{ portfolio }}" as="p" hint-placeholder-count="4">
+          <div style="grid-column:span {{ p.span }}; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.07); background:#101010; cursor:pointer; transition:border-color .25s,transform .25s" style-hover="border-color:rgba(255,255,255,0.18); transform:translateY(-3px)">
+            <div style="position:relative; height:{{ p.h }}; background:repeating-linear-gradient(135deg,#171717 0 13px,#121212 13px 26px); border-bottom:1px solid rgba(255,255,255,0.05)">
+              <span style="position:absolute; top:16px; left:18px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:rgba(244,242,238,0.38)">// {{ p.meta }}</span>
+              <span style="position:absolute; bottom:16px; right:18px; font-size:12px; color:rgba(244,242,238,0.4); opacity:0.9">смотреть кейс →</span>
+            </div>
+            <div style="padding:20px 22px; display:flex; align-items:center; justify-content:space-between">
+              <div><div style="font-family:'Lora',serif; font-size:20px; color:#F7F5F1; line-height:1.2">{{ p.title }}</div><div style="font-size:12px; color:rgba(244,242,238,0.42); margin-top:6px">{{ p.tag }}</div></div>
+            </div>
+          </div>
+        </sc-for>
+        <div style="grid-column:span 12; border-radius:16px; border:1px dashed rgba(255,255,255,0.12); padding:30px; display:flex; align-items:center; justify-content:center; gap:12px; color:rgba(244,242,238,0.4); cursor:pointer; font-size:14px" style-hover="border-color:rgba(255,255,255,0.22); color:rgba(244,242,238,0.6)"><span style="font-size:18px">+</span>Добавить работу в портфолио</div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ======================= PROFILE ======================= -->
+    <sc-if value="{{ show.profile }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Profile" style="padding:46px 56px 80px; max-width:1080px; margin:0 auto; animation:fadeIn .4s ease both">
+      <div style="display:flex; align-items:center; gap:26px; padding-bottom:38px; border-bottom:1px solid rgba(255,255,255,0.07)">
+        <span style="flex:none; width:96px; height:96px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 9px,#1b1b1b 9px 18px); border:1px solid rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:600; color:rgba(244,242,238,0.7)">МК</span>
+        <div style="flex:1">
+          <h1 style="font-family:'Lora',serif; font-weight:500; font-size:38px; letter-spacing:-0.02em; margin:0 0 8px; color:#F7F5F1">Марк Кравцов</h1>
+          <div style="font-size:14px; color:rgba(244,242,238,0.5)">Студент потока 7 · в клубе с марта 2026 · Москва</div>
+        </div>
+        <button style="padding:11px 18px; border:1px solid rgba(255,255,255,0.12); border-radius:10px; background:transparent; color:rgba(244,242,238,0.65); font-family:'Onest',sans-serif; font-size:13px; cursor:pointer" style-hover="border-color:rgba(255,255,255,0.25)">Редактировать профиль</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin:32px 0">
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:#101010; padding:24px"><div style="font-family:'Lora',serif; font-size:40px; color:#F7F5F1; line-height:1">24</div><div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:10px">уроков пройдено</div></div>
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:#101010; padding:24px"><div style="font-family:'Lora',serif; font-size:40px; color:#F7F5F1; line-height:1">6</div><div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:10px">домашек сдано</div></div>
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:linear-gradient(160deg,#141210,#101010); padding:24px"><div style="font-family:'Lora',serif; font-size:40px; color:var(--accent,#E8835A); line-height:1">8,7</div><div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:10px">средний балл</div></div>
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:#101010; padding:24px"><div style="font-family:'Lora',serif; font-size:40px; color:#F7F5F1; line-height:1">9</div><div style="font-size:12.5px; color:rgba(244,242,238,0.45); margin-top:10px">дней подряд</div></div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:18px">
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:16px; background:#101010; padding:26px 28px">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:18px">АКТИВНОСТЬ ЗА 10 НЕДЕЛЬ</div>
+          <div style="display:grid; grid-template-columns:repeat(20,1fr); gap:5px">
+            <sc-for list="{{ heatmap }}" as="h" hint-placeholder-count="40"><span style="aspect-ratio:1; border-radius:3px; background:{{ h.bg }}"></span></sc-for>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:16px; font-size:11px; color:rgba(244,242,238,0.35)">меньше<span style="width:11px; height:11px; border-radius:3px; background:rgba(255,255,255,0.05)"></span><span style="width:11px; height:11px; border-radius:3px; background:rgba(232,131,90,0.35)"></span><span style="width:11px; height:11px; border-radius:3px; background:rgba(232,131,90,0.7)"></span><span style="width:11px; height:11px; border-radius:3px; background:var(--accent,#E8835A)"></span>больше</div>
+        </div>
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:16px; background:#101010; padding:26px 28px">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:18px">НАВЫКИ</div>
+          <div style="display:flex; flex-direction:column; gap:16px">
+            <div><div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:7px"><span style="color:#F4F2EE">Типографика</span><span style="color:rgba(244,242,238,0.4)">сильно</span></div><div style="height:5px; border-radius:3px; background:rgba(255,255,255,0.07)"><span style="display:block; height:100%; width:86%; border-radius:3px; background:#8FA98C"></span></div></div>
+            <div><div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:7px"><span style="color:#F4F2EE">Цвет и контраст</span><span style="color:rgba(244,242,238,0.4)">растёт</span></div><div style="height:5px; border-radius:3px; background:rgba(255,255,255,0.07)"><span style="display:block; height:100%; width:64%; border-radius:3px; background:var(--accent,#E8835A)"></span></div></div>
+            <div><div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:7px"><span style="color:#F4F2EE">Прототипирование</span><span style="color:rgba(244,242,238,0.4)">впереди</span></div><div style="height:5px; border-radius:3px; background:rgba(255,255,255,0.07)"><span style="display:block; height:100%; width:28%; border-radius:3px; background:rgba(244,242,238,0.3)"></span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ======================= ADMIN ======================= -->
+    <sc-if value="{{ show.admin }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Admin" style="padding:46px 56px 80px; max-width:1280px; margin:0 auto; animation:fadeIn .4s ease both">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:36px">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.06em; color:var(--accent,#E8835A); margin-bottom:14px">ПАНЕЛЬ НАСТАВНИКА</div>
+          <h1 style="font-family:'Lora',serif; font-weight:500; font-size:40px; letter-spacing:-0.02em; margin:0; color:#F7F5F1">Поток 7 · <span style="font-style:italic">студенты</span></h1>
+        </div>
+        <div style="display:flex; gap:10px">
+          <button onClick="{{ goQueue }}" style="padding:10px 16px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:transparent; color:rgba(244,242,238,0.65); font-family:'Onest',sans-serif; font-size:13px; cursor:pointer" style-hover="border-color:rgba(255,255,255,0.22)">Очередь проверки</button>
+          <button onClick="{{ goBuilder }}" style="padding:10px 16px; border:none; border-radius:10px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:13px; font-weight:600; cursor:pointer">+ Конструктор курса</button>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:30px">
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:#101010; padding:22px 24px"><div style="font-size:12.5px; color:rgba(244,242,238,0.45)">Всего студентов</div><div style="font-family:'Lora',serif; font-size:42px; color:#F7F5F1; margin-top:8px; line-height:1">12</div></div>
+        <div style="border:1px solid rgba(255,255,255,0.07); border-radius:14px; background:#101010; padding:22px 24px"><div style="font-size:12.5px; color:rgba(244,242,238,0.45); display:flex; align-items:center; gap:7px"><span style="width:6px; height:6px; border-radius:50%; background:#8FA98C"></span>Активны сейчас</div><div style="font-family:'Lora',serif; font-size:42px; color:#F7F5F1; margin-top:8px; line-height:1">4</div></div>
+        <div onClick="{{ goQueue }}" style="border:1px solid rgba(232,131,90,0.25); border-radius:14px; background:linear-gradient(160deg,#1a130e,#101010); padding:22px 24px; cursor:pointer; transition:transform .2s" style-hover="transform:translateY(-2px)"><div style="font-size:12.5px; color:rgba(244,242,238,0.45); display:flex; align-items:center; justify-content:space-between">Домашек на проверке <span style="color:var(--accent,#E8835A)">→</span></div><div style="font-family:'Lora',serif; font-size:42px; color:var(--accent,#E8835A); margin-top:8px; line-height:1">3</div></div>
+      </div>
+
+      <div style="border:1px solid rgba(255,255,255,0.07); border-radius:16px; background:#0F0F0F; overflow:hidden">
+        <div style="display:flex; align-items:center; padding:14px 24px; border-bottom:1px solid rgba(255,255,255,0.06); font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.05em; color:rgba(244,242,238,0.38)">
+          <span style="flex:1">СТУДЕНТ</span><span style="width:200px">ТЕКУЩИЙ МОДУЛЬ</span><span style="width:130px">ПРОГРЕСС</span><span style="width:150px">СТАТУС ДЗ</span><span style="width:120px; text-align:right">АКТИВНОСТЬ</span>
+        </div>
+        <sc-for list="{{ students }}" as="st" hint-placeholder-count="5">
+          <div style="display:flex; align-items:center; padding:15px 24px; border-bottom:1px solid rgba(255,255,255,0.04); cursor:pointer; transition:background .15s" style-hover="background:rgba(255,255,255,0.025)">
+            <span style="flex:1; display:flex; align-items:center; gap:12px"><span style="position:relative; flex:none"><span style="width:34px; height:34px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 6px,#1b1b1b 6px 12px); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:rgba(244,242,238,0.7)">{{ st.init }}</span><span style="position:absolute; right:-1px; bottom:-1px; width:9px; height:9px; border-radius:50%; background:{{ st.dot }}; border:2px solid #0F0F0F"></span></span><span style="font-size:14px; font-weight:500; color:#F4F2EE">{{ st.name }}</span></span>
+            <span style="width:200px; font-size:13px; color:rgba(244,242,238,0.55)">{{ st.module }}</span>
+            <span style="width:130px; display:flex; align-items:center; gap:10px"><span style="flex:1; height:5px; border-radius:3px; background:rgba(255,255,255,0.08); position:relative"><span style="position:absolute; left:0; top:0; bottom:0; width:{{ st.prog }}; background:var(--accent,#E8835A); border-radius:3px"></span></span><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.45)">{{ st.prog }}</span></span>
+            <span style="width:150px"><span style="font-size:11.5px; font-weight:500; color:{{ st.sc }}; padding:4px 11px; border-radius:100px; background:{{ st.sb }}">{{ st.status }}</span></span>
+            <span style="width:120px; text-align:right; font-size:12px; color:rgba(244,242,238,0.4)">{{ st.active }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ======================= QUEUE (mentor review workspace) ======================= -->
+    <sc-if value="{{ show.queue }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Queue" style="padding:40px 0 60px; animation:fadeIn .4s ease both">
+      <div class="split" style="display:flex; gap:36px; max-width:1320px; margin:0 auto; padding:0 48px; align-items:flex-start">
+
+        <!-- queue list -->
+        <div class="main" style="flex:none; width:344px; position:sticky; top:34px">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px">
+            <div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; color:var(--accent,#E8835A); margin-bottom:8px">ПАНЕЛЬ НАСТАВНИКА</div><h1 style="font-family:'Lora',serif; font-weight:500; font-size:28px; margin:0; color:#F7F5F1; letter-spacing:-0.01em">Очередь проверки</h1></div>
+          </div>
+          <div style="display:flex; gap:6px; margin-bottom:16px"><span style="font-size:12px; color:#0B0B0B; background:#F4F2EE; padding:5px 12px; border-radius:100px; font-weight:600">Новые · 3</span><span style="font-size:12px; color:rgba(244,242,238,0.55); padding:5px 12px; border-radius:100px; border:1px solid rgba(255,255,255,0.1)">Все · 8</span></div>
+          <div style="display:flex; flex-direction:column; gap:8px">
+            <sc-for list="{{ queueItems }}" as="q" hint-placeholder-count="4">
+              <div onClick="{{ goQueue }}" style="border:1px solid {{ q.bd }}; background:{{ q.bg }}; border-radius:13px; padding:15px 16px; cursor:pointer; transition:border-color .2s" style-hover="border-color:rgba(255,255,255,0.2)">
+                <div style="display:flex; align-items:center; gap:11px; margin-bottom:10px">
+                  <span style="flex:none; width:30px; height:30px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 6px,#1b1b1b 6px 12px); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:600; color:rgba(244,242,238,0.7)">{{ q.init }}</span>
+                  <span style="flex:1; font-size:13.5px; font-weight:600; color:#F4F2EE">{{ q.student }}</span>
+                  <span style="flex:none; font-size:10.5px; font-weight:500; color:{{ q.sc }}; padding:3px 9px; border-radius:100px; background:{{ q.sb }}">{{ q.kind }}</span>
+                </div>
+                <div style="font-size:12.5px; color:rgba(244,242,238,0.55)">{{ q.task }}</div>
+                <div style="font-size:11.5px; color:rgba(244,242,238,0.35); margin-top:6px">сдано {{ q.waiting }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- grading panel -->
+        <div class="side" style="flex:1; min-width:0; display:flex; flex-direction:column; gap:18px">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:20px">
+            <div>
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="width:26px; height:26px; border-radius:50%; background:repeating-linear-gradient(135deg,#242424 0 5px,#1b1b1b 5px 10px); border:1px solid rgba(255,255,255,0.1); display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:rgba(244,242,238,0.7)">МК</span><span style="font-size:13px; color:rgba(244,242,238,0.55)">Марк Кравцов · сдано вчера, 22:14</span></div>
+              <h2 style="font-family:'Lora',serif; font-weight:500; font-size:28px; margin:0; color:#F7F5F1; letter-spacing:-0.01em">Цветовая система для экрана продукта</h2>
+            </div>
+            <button style="flex:none; padding:8px 14px; border:1px solid rgba(255,255,255,0.1); border-radius:9px; background:transparent; color:rgba(244,242,238,0.6); font-family:'Onest',sans-serif; font-size:12.5px; cursor:pointer">Открыть .fig ↗</button>
+          </div>
+
+          <div style="position:relative; aspect-ratio:16/8; border-radius:14px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); background:repeating-linear-gradient(135deg,#161616 0 13px,#111111 13px 26px)">
+            <span style="position:absolute; top:14px; left:16px; font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(244,242,238,0.4)">// работа студента · color-system-v2.fig</span>
+            <span style="position:absolute; top:42%; left:30%; transform:translate(-50%,-50%); width:24px; height:24px; border-radius:50%; background:var(--accent,#E8835A); color:#0B0B0B; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; box-shadow:0 0 0 4px rgba(11,11,11,0.6)">1</span>
+          </div>
+
+          <!-- scoring -->
+          <div style="border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:22px 24px">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">ОЦЕНКА ПО КРИТЕРИЯМ</span><span style="font-size:12.5px; color:rgba(244,242,238,0.45)">итог: <span style="font-family:'Lora',serif; font-size:18px; color:#F7F5F1">7,5</span> / 10</span></div>
+            <div style="display:flex; flex-direction:column; gap:14px">
+              <sc-for list="{{ scoreRows }}" as="g" hint-placeholder-count="4">
+                <div style="display:flex; align-items:center; gap:16px">
+                  <span style="flex:1; font-size:13.5px; color:#F4F2EE">{{ g.t }}</span>
+                  <span style="flex:none; display:flex; align-items:center; gap:9px"><span style="width:28px; height:28px; border-radius:8px; border:1px solid rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; color:rgba(244,242,238,0.5); cursor:pointer; font-size:15px">−</span><span style="font-family:'Lora',serif; font-size:20px; color:{{ g.c }}; width:26px; text-align:center">{{ g.score }}</span><span style="width:28px; height:28px; border-radius:8px; border:1px solid rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; color:rgba(244,242,238,0.5); cursor:pointer; font-size:15px">+</span></span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- review composer -->
+          <div style="border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:20px 22px">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4); margin-bottom:14px">РЕВЬЮ ДЛЯ СТУДЕНТА</div>
+            <div style="min-height:84px; padding:14px 16px; border:1px solid rgba(255,255,255,0.08); border-radius:11px; background:#0B0B0B; font-size:14px; line-height:1.6; color:rgba(244,242,238,0.55)">Видно, что подход понят — особенно с акцентом. Разведи фон и поверхность по светлоте и переименуй токены по роли…<span style="display:inline-block; width:1.5px; height:16px; background:var(--accent,#E8835A); vertical-align:-3px; margin-left:1px"></span></div>
+            <div style="display:flex; align-items:center; gap:10px; margin-top:14px">
+              <button style="display:flex; align-items:center; gap:8px; padding:9px 14px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:transparent; color:rgba(244,242,238,0.6); font-family:'Onest',sans-serif; font-size:12.5px; cursor:pointer">＋ Прикрепить пример</button>
+              <span style="flex:1"></span>
+              <button style="padding:11px 18px; border:1px solid rgba(201,139,107,0.4); border-radius:10px; background:rgba(201,139,107,0.08); color:#C98B6B; font-family:'Onest',sans-serif; font-size:13.5px; font-weight:600; cursor:pointer">Вернуть на доработку</button>
+              <button style="padding:11px 20px; border:none; border-radius:10px; background:#8FA98C; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="opacity:0.92">Принять работу ✓</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ======================= BUILDER (course constructor) ======================= -->
+    <sc-if value="{{ show.builder }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Builder" style="padding:40px 0 60px; animation:fadeIn .4s ease both">
+      <div style="max-width:1320px; margin:0 auto; padding:0 48px">
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:32px">
+          <div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; color:var(--accent,#E8835A); margin-bottom:10px">КОНСТРУКТОР КУРСА</div><h1 style="font-family:'Lora',serif; font-weight:500; font-size:36px; margin:0; color:#F7F5F1; letter-spacing:-0.02em">Структура программы</h1></div>
+          <div style="display:flex; align-items:center; gap:12px"><span style="font-size:12.5px; color:rgba(244,242,238,0.45)">черновик сохранён</span><button style="padding:10px 18px; border:none; border-radius:10px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:13px; font-weight:600; cursor:pointer">Опубликовать изменения</button></div>
+        </div>
+
+        <div class="split" style="display:flex; gap:24px; align-items:flex-start">
+          <!-- outline -->
+          <div class="main" style="flex:1; min-width:0; display:flex; flex-direction:column; gap:10px">
+            <!-- collapsed module -->
+            <div style="display:flex; align-items:center; gap:14px; padding:18px 20px; border:1px solid rgba(255,255,255,0.06); border-radius:13px; background:#0F0F0F; opacity:0.65; cursor:pointer">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8FA98C">01</span>
+              <span style="flex:1; font-family:'Lora',serif; font-size:19px; color:#F4F2EE">Основы визуального восприятия</span>
+              <span style="font-size:12px; color:rgba(244,242,238,0.4)">8 уроков · опубликован</span><span style="color:rgba(244,242,238,0.3)">⌄</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:14px; padding:18px 20px; border:1px solid rgba(255,255,255,0.06); border-radius:13px; background:#0F0F0F; opacity:0.65; cursor:pointer">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8FA98C">02</span>
+              <span style="flex:1; font-family:'Lora',serif; font-size:19px; color:#F4F2EE">Типографика и сетки</span>
+              <span style="font-size:12px; color:rgba(244,242,238,0.4)">10 уроков · опубликован</span><span style="color:rgba(244,242,238,0.3)">⌄</span>
+            </div>
+
+            <!-- expanded module 03 -->
+            <div style="border:1px solid rgba(232,131,90,0.3); border-radius:14px; background:#101010; overflow:hidden">
+              <div style="display:flex; align-items:center; gap:14px; padding:18px 20px; border-bottom:1px solid rgba(255,255,255,0.06)">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent,#E8835A)">03</span>
+                <span style="flex:1; font-family:'Lora',serif; font-size:19px; color:#F7F5F1">Цвет и контраст</span>
+                <span style="font-size:11px; font-weight:500; color:var(--accent,#E8835A); padding:3px 10px; border-radius:100px; background:rgba(232,131,90,0.12)">редактируется</span><span style="color:rgba(244,242,238,0.4)">⌃</span>
+              </div>
+              <div style="padding:10px 14px">
+                <sc-for list="{{ m3lessons }}" as="l" hint-placeholder-count="4">
+                  <div style="display:flex; align-items:center; gap:13px; padding:12px 12px; border:1px solid {{ l.bd }}; background:{{ l.bg }}; border-radius:10px; margin:4px 0; cursor:pointer" style-hover="border-color:rgba(255,255,255,0.16)">
+                    <span style="flex:none; color:rgba(244,242,238,0.25); font-size:14px; letter-spacing:-2px; cursor:grab">⠿</span>
+                    <span style="flex:none; font-family:'JetBrains Mono',monospace; font-size:9.5px; color:rgba(244,242,238,0.5); border:1px solid rgba(255,255,255,0.1); padding:2px 7px; border-radius:5px">{{ l.kind }}</span>
+                    <span style="flex:1; font-size:14px; color:#F4F2EE">{{ l.title }}</span>
+                    <span style="flex:none; font-size:12px; color:rgba(244,242,238,0.4)">{{ l.dur }}</span>
+                    <span style="flex:none; font-size:11px; color:{{ l.sc }}; width:90px; text-align:right">{{ l.st }}</span>
+                  </div>
+                </sc-for>
+                <div style="display:flex; align-items:center; gap:9px; padding:11px 14px; margin:4px 0; border:1px dashed rgba(255,255,255,0.12); border-radius:10px; color:rgba(244,242,238,0.45); font-size:13px; cursor:pointer" style-hover="border-color:rgba(255,255,255,0.25); color:rgba(244,242,238,0.7)"><span style="font-size:15px">＋</span>Добавить урок или задание</div>
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:14px; padding:18px 20px; border:1px solid rgba(255,255,255,0.06); border-radius:13px; background:#0F0F0F; opacity:0.65; cursor:pointer">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:rgba(244,242,238,0.3)">04</span>
+              <span style="flex:1; font-family:'Lora',serif; font-size:19px; color:rgba(244,242,238,0.7)">Композиция интерфейсов</span>
+              <span style="font-size:12px; color:rgba(244,242,238,0.35)">черновик</span><span style="color:rgba(244,242,238,0.3)">⌄</span>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:center; gap:10px; padding:16px; border:1px dashed rgba(255,255,255,0.12); border-radius:13px; color:rgba(244,242,238,0.45); font-size:14px; cursor:pointer" style-hover="border-color:rgba(255,255,255,0.22); color:rgba(244,242,238,0.7)"><span style="font-size:17px">＋</span>Новый модуль</div>
+          </div>
+
+          <!-- inspector -->
+          <aside class="side" style="flex:none; width:368px; position:sticky; top:34px; border:1px solid rgba(255,255,255,0.07); border-radius:15px; background:#101010; padding:22px">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; color:rgba(244,242,238,0.4)">РЕДАКТИРОВАНИЕ УРОКА</span><span style="font-size:11px; color:#8FA98C">опубликован</span></div>
+
+            <label style="display:block; font-size:12px; color:rgba(244,242,238,0.45); margin-bottom:7px">Название</label>
+            <div style="padding:11px 14px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:#0B0B0B; font-size:14px; color:#F4F2EE; margin-bottom:18px">Цветовые системы в интерфейсах</div>
+
+            <label style="display:block; font-size:12px; color:rgba(244,242,238,0.45); margin-bottom:7px">Видео</label>
+            <div style="display:flex; align-items:center; gap:11px; padding:11px 14px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:#0B0B0B; margin-bottom:18px"><span style="flex:none; width:30px; height:30px; border-radius:7px; background:repeating-linear-gradient(135deg,#1d1d1d,#141414); border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center"><span style="border-left:8px solid rgba(244,242,238,0.7); border-top:5px solid transparent; border-bottom:5px solid transparent; margin-left:2px"></span></span><span style="flex:1; min-width:0"><span style="display:block; font-size:13px; color:#F4F2EE">lesson-3-2.mp4</span><span style="display:block; font-size:11px; color:rgba(244,242,238,0.4)">14:08 · 1080p</span></span><span style="color:rgba(244,242,238,0.35); cursor:pointer">↻</span></div>
+
+            <label style="display:block; font-size:12px; color:rgba(244,242,238,0.45); margin-bottom:7px">Материалы</label>
+            <div style="display:flex; flex-direction:column; gap:7px; margin-bottom:14px">
+              <div style="display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid rgba(255,255,255,0.07); border-radius:9px; background:#0B0B0B"><span style="font-family:'JetBrains Mono',monospace; font-size:8.5px; color:var(--accent,#E8835A); border:1px solid rgba(255,255,255,0.1); padding:2px 6px; border-radius:5px">FIG</span><span style="flex:1; font-size:12.5px; color:rgba(244,242,238,0.7)">Цветовые токены</span><span style="color:rgba(244,242,238,0.3); cursor:pointer">✕</span></div>
+              <div style="display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid rgba(255,255,255,0.07); border-radius:9px; background:#0B0B0B"><span style="font-family:'JetBrains Mono',monospace; font-size:8.5px; color:#C98B6B; border:1px solid rgba(255,255,255,0.1); padding:2px 6px; border-radius:5px">PDF</span><span style="flex:1; font-size:12.5px; color:rgba(244,242,238,0.7)">Конспект урока</span><span style="color:rgba(244,242,238,0.3); cursor:pointer">✕</span></div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; padding:9px 12px; border:1px dashed rgba(255,255,255,0.12); border-radius:9px; color:rgba(244,242,238,0.45); font-size:12.5px; cursor:pointer; margin-bottom:18px" style-hover="border-color:rgba(255,255,255,0.22)"><span style="font-size:14px">＋</span>Добавить материал</div>
+
+            <label style="display:block; font-size:12px; color:rgba(244,242,238,0.45); margin-bottom:7px">Домашнее задание</label>
+            <div style="display:flex; align-items:center; gap:11px; padding:13px 14px; border:1px solid rgba(232,131,90,0.25); border-radius:10px; background:rgba(232,131,90,0.05); margin-bottom:22px"><span style="flex:none; width:8px; height:8px; border-radius:50%; background:var(--accent,#E8835A)"></span><span style="flex:1; font-size:13px; color:#F4F2EE">Цветовая система для экрана</span><span style="font-size:11px; color:rgba(244,242,238,0.45); cursor:pointer">изменить</span></div>
+
+            <div style="display:flex; gap:10px"><button style="flex:1; padding:12px; border:1px solid rgba(255,255,255,0.12); border-radius:10px; background:transparent; color:rgba(244,242,238,0.65); font-family:'Onest',sans-serif; font-size:13px; cursor:pointer">Снять с публикации</button><button style="flex:1; padding:12px; border:none; border-radius:10px; background:#F4F2EE; color:#0B0B0B; font-family:'Onest',sans-serif; font-size:13px; font-weight:600; cursor:pointer">Сохранить</button></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#E8835A&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;defaultScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;onboarding&quot;,&quot;dashboard&quot;,&quot;course&quot;,&quot;lesson&quot;,&quot;homework&quot;,&quot;review&quot;,&quot;chat&quot;,&quot;portfolio&quot;,&quot;profile&quot;,&quot;admin&quot;,&quot;queue&quot;,&quot;builder&quot;],&quot;default&quot;:&quot;onboarding&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { screen: null };
+
+  go(id){ return () => this.setState({ screen:id }); }
+
+  icon(name){
+    const C = React.createElement;
+    const wrap = (...kids) => C('svg', {width:16,height:16,viewBox:'0 0 16 16',fill:'none',stroke:'currentColor',strokeWidth:1.4,strokeLinecap:'round',strokeLinejoin:'round'}, ...kids);
+    switch(name){
+      case 'grid': return wrap(C('rect',{key:1,x:2,y:2,width:5,height:5,rx:1.2}),C('rect',{key:2,x:9,y:2,width:5,height:5,rx:1.2}),C('rect',{key:3,x:2,y:9,width:5,height:5,rx:1.2}),C('rect',{key:4,x:9,y:9,width:5,height:5,rx:1.2}));
+      case 'list': return wrap(C('path',{key:1,d:'M3 4h10'}),C('path',{key:2,d:'M3 8h7.5'}),C('path',{key:3,d:'M3 12h4.5'}));
+      case 'play': return wrap(C('path',{key:1,d:'M5.5 3.4l6.5 4.6-6.5 4.6z'}));
+      case 'task': return wrap(C('rect',{key:1,x:2.5,y:2.5,width:11,height:11,rx:2.2}),C('path',{key:2,d:'M5.6 8.1l1.7 1.7L11 6'}));
+      case 'check': return wrap(C('circle',{key:1,cx:8,cy:8,r:5.6}),C('path',{key:2,d:'M5.7 8l1.6 1.6L10.5 6.5'}));
+      case 'chat': return wrap(C('path',{key:1,d:'M3 4.6a1.6 1.6 0 011.6-1.6h6.8A1.6 1.6 0 0113 4.6v4.1a1.6 1.6 0 01-1.6 1.6H6.2L3 12.7z'}));
+      case 'grid2': return wrap(C('rect',{key:1,x:2,y:2.4,width:5,height:5,rx:1.2}),C('rect',{key:2,x:9,y:2.4,width:5,height:5,rx:1.2}),C('rect',{key:3,x:2,y:9.2,width:12,height:4.4,rx:1.2}));
+      case 'user': return wrap(C('circle',{key:1,cx:8,cy:5.6,r:2.7}),C('path',{key:2,d:'M3.2 13.2c0-2.5 2.1-3.9 4.8-3.9s4.8 1.4 4.8 3.9'}));
+      case 'diamond': return wrap(C('path',{key:1,d:'M8 2.2l5.2 5.8L8 13.8 2.8 8z'}));
+      default: return wrap();
+    }
+  }
+
+  modulesRaw = [
+    {title:'Основы визуального восприятия', meta:'8 уроков · 6 ч', status:'done', desc:'Как глаз считывает форму, вес и иерархию ещё до текста.'},
+    {title:'Типографика и сетки', meta:'10 уроков · 9 ч', status:'done', desc:'Ритм, кегли, модульные сетки и наборная дисциплина.'},
+    {title:'Цвет и контраст', meta:'7 уроков · 7 ч', status:'active', desc:'Цветовые системы, токены, доступность и эмоция продукта.'},
+    {title:'Композиция интерфейсов', meta:'9 уроков · 8 ч', status:'locked', desc:'Асимметрия, фокус, плотность и воздух в реальных экранах.'},
+    {title:'Прототипирование и взаимодействие', meta:'8 уроков · 9 ч', status:'locked', desc:'Состояния, переходы, micro-interactions, логика потоков.'},
+    {title:'Дизайн-системы', meta:'11 уроков · 12 ч', status:'locked', desc:'Компоненты, токены, документация и масштабирование.'},
+    {title:'Портфолио и подача кейсов', meta:'6 уроков · 6 ч', status:'locked', desc:'Сторителлинг, структура кейса и презентация работы.'},
+  ];
+
+  comments = [
+    {who:'Артём Северов', init:'АС', dot:'#E8835A', time:'2 часа назад', text:'Сетка в макете дышит — но в карточках товара leading слишком плотный. Подними межстрочный до 1.5, иначе блок читается как стена.'},
+    {who:'Артём Северов', init:'АС', dot:'#8FA98C', time:'вчера', text:'Принял задание по типографике. Сильная работа с контрастом кеглей — именно так и держат иерархию.'},
+  ];
+
+  materials = [
+    {type:'Figma', tc:'#E8835A', name:'Цветовые токены — стартовый файл', meta:'.fig · 2.4 МБ'},
+    {type:'PDF',   tc:'#C98B6B', name:'Конспект: системы цвета', meta:'.pdf · 8 страниц'},
+    {type:'URL',   tc:'#8FA98C', name:'Подборка референсов', meta:'12 примеров'},
+  ];
+  checklist = [
+    {t:'Собрать палитру: 1 базовый + 2 акцентных', done:true},
+    {t:'Проверить контраст по WCAG AA', done:true},
+    {t:'Описать токены: фон / текст / границы', done:false},
+    {t:'Применить систему на одном экране', done:false},
+  ];
+
+  criteria = [
+    {t:'Системность палитры', d:'Базовый + акцентные, осмысленные роли', w:'30'},
+    {t:'Контраст и доступность', d:'Соответствие WCAG AA на тёмной теме', w:'25'},
+    {t:'Применение токенов', d:'Названы по роли, а не по цвету', w:'25'},
+    {t:'Аккуратность подачи', d:'Чистый файл, понятная структура', w:'20'},
+  ];
+
+  reviewComments = [
+    {n:1, tag:'Палитра', sev:'Доработать', sc:'#E8835A', svBg:'rgba(232,131,90,0.12)', top:'22%', left:'18%', text:'Базовый фон и первая поверхность почти совпадают — разница в 2% по светлоте не читается. Разведи их минимум до 6–8%, иначе глубины нет.'},
+    {n:2, tag:'Контраст', sev:'Принято', sc:'#8FA98C', svBg:'rgba(143,169,140,0.12)', top:'48%', left:'62%', text:'Акцент на тёмном фоне отличный: тёплый, но не выжигает. Контраст текста проходит AA с запасом — так и держим.'},
+    {n:3, tag:'Токены', sev:'Доработать', sc:'#E8835A', svBg:'rgba(232,131,90,0.12)', top:'74%', left:'34%', text:'Назвал токены по цвету (orange-500), а не по роли. Переименуй в accent/primary — сейчас система не переживёт смену акцента.'},
+  ];
+  gradeRows = [
+    {t:'Системность палитры', v:70}, {t:'Контраст и доступность', v:92},
+    {t:'Применение токенов', v:60}, {t:'Аккуратность подачи', v:85},
+  ];
+
+  chatMessages = [
+    {from:'mentor', text:'Марк, привет! Посмотрел твой черновик палитры — уже хорошая база.', time:'21:02'},
+    {from:'mentor', text:'Главное — разведи фон и первую поверхность по светлоте. Кинул пример, посмотри слои.', time:'21:02', file:{name:'contrast-example.fig', meta:'FIG · 1.3 МБ'}},
+    {from:'me', text:'Понял, спасибо! А акцент по контрасту нормально читается?', time:'21:08'},
+    {from:'mentor', text:'Да, акцент отличный — тёплый, но не выжигает. Не трогай его.', time:'21:09'},
+    {from:'me', text:'Класс. Перезалью вторую версию к завтрашнему созвону.', time:'21:10'},
+  ];
+
+  portfolio = [
+    {title:'Редизайн дашборда аналитики', tag:'Модуль 4 · учебный кейс', meta:'UI · 6 экранов', span:7, h:'320px'},
+    {title:'Музыкальный плеер', tag:'Личный проект', meta:'Концепт · iOS', span:5, h:'320px'},
+    {title:'Типографическая система', tag:'Модуль 2', meta:'Type · Grid', span:5, h:'260px'},
+    {title:'Онбординг финтех-приложения', tag:'Модуль 5', meta:'Flow · 8 экранов', span:7, h:'260px'},
+  ];
+
+  students = [
+    {name:'Марк Кравцов', init:'МК', module:'Модуль 3 · Цвет', prog:'38%', status:'На проверке', sc:'#E8835A', sb:'rgba(232,131,90,0.12)', active:'5 минут назад', dot:'#8FA98C'},
+    {name:'Лена Дорн', init:'ЛД', module:'Модуль 5 · Прототипы', prog:'62%', status:'В процессе', sc:'rgba(244,242,238,0.6)', sb:'rgba(255,255,255,0.05)', active:'1 час назад', dot:'#8FA98C'},
+    {name:'Игорь Пан', init:'ИП', module:'Модуль 2 · Типографика', prog:'22%', status:'Требует доработки', sc:'#C98B6B', sb:'rgba(201,139,107,0.12)', active:'вчера', dot:'rgba(244,242,238,0.2)'},
+    {name:'Соня Вист', init:'СВ', module:'Модуль 4 · Композиция', prog:'48%', status:'Принято', sc:'#8FA98C', sb:'rgba(143,169,140,0.12)', active:'3 часа назад', dot:'#8FA98C'},
+    {name:'Тимур Аск', init:'ТА', module:'Модуль 1 · Восприятие', prog:'12%', status:'В процессе', sc:'rgba(244,242,238,0.6)', sb:'rgba(255,255,255,0.05)', active:'2 дня назад', dot:'rgba(244,242,238,0.2)'},
+  ];
+
+  queueItems = [
+    {student:'Марк Кравцов', init:'МК', task:'Цветовая система · Модуль 3', waiting:'2 часа назад', kind:'Новая', sc:'#E8835A', sb:'rgba(232,131,90,0.12)', sel:true},
+    {student:'Соня Вист', init:'СВ', task:'Композиция экрана · Модуль 4', waiting:'5 часов назад', kind:'Новая', sc:'#E8835A', sb:'rgba(232,131,90,0.12)', sel:false},
+    {student:'Игорь Пан', init:'ИП', task:'Модульная сетка · Модуль 2', waiting:'вчера', kind:'Повторно', sc:'#C98B6B', sb:'rgba(201,139,107,0.12)', sel:false},
+    {student:'Тимур Аск', init:'ТА', task:'Иерархия экрана · Модуль 1', waiting:'2 дня назад', kind:'Новая', sc:'#E8835A', sb:'rgba(232,131,90,0.12)', sel:false},
+  ];
+  m3lessons = [
+    {title:'Природа цвета и восприятие', kind:'Видео', dur:'12 мин', st:'Опубликован', sc:'#8FA98C', sel:false},
+    {title:'Цветовые системы в интерфейсах', kind:'Видео', dur:'14 мин', st:'Опубликован', sc:'#8FA98C', sel:true},
+    {title:'Контраст и доступность', kind:'Видео', dur:'11 мин', st:'Черновик', sc:'rgba(244,242,238,0.45)', sel:false},
+    {title:'Практика: палитра продукта', kind:'Задание', dur:'ДЗ', st:'Опубликован', sc:'#8FA98C', sel:false},
+  ];
+
+  renderVals(){
+    const s = this.state.screen || this.props.defaultScreen || 'onboarding';
+    const accent = this.props.accent || '#E8835A';
+    const mk = (id,label,icon,badge) => ({ id, label, iconEl:this.icon(icon), badge:badge||'', active:s===id, onClick:this.go(id),
+      bg: s===id ? 'rgba(255,255,255,0.06)' : 'transparent',
+      color: s===id ? '#F4F2EE' : 'rgba(244,242,238,0.46)' });
+    const nav = [ mk('dashboard','Главная','grid'), mk('course','Программа','list'), mk('lesson','Урок','play'),
+      mk('homework','Домашка','task','1'), mk('review','Проверка','check'), mk('chat','Чат','chat','2'),
+      mk('portfolio','Портфолио','grid2'), mk('profile','Профиль','user') ];
+    const adminNav = [ mk('admin','Обзор','grid'), mk('queue','Проверка','check','3'), mk('builder','Конструктор','list') ];
+    const ids = ['onboarding','dashboard','course','lesson','homework','review','chat','portfolio','profile','admin','queue','builder'];
+    const show = {}; ids.forEach(id => show[id] = s===id);
+
+    const statusMap = {
+      done:   {label:'Завершён',   sc:'#8FA98C', dot:'#8FA98C', dotBg:'rgba(143,169,140,0.12)', op:0.62, locked:false},
+      active: {label:'В процессе',  sc:'#E8835A', dot:accent,    dotBg:'rgba(232,131,90,0.14)',  op:1,    locked:false},
+      locked: {label:'Откроется позже', sc:'rgba(244,242,238,0.32)', dot:'rgba(244,242,238,0.18)', dotBg:'rgba(255,255,255,0.03)', op:0.42, locked:true},
+    };
+    const modulesView = this.modulesRaw.map((m,i) => {
+      const st = statusMap[m.status];
+      return { ...m, ...st, num:String(i+1).padStart(2,'0'), isActive: m.status==='active',
+        onClick: m.status==='active' ? this.go('lesson') : (()=>{}) };
+    });
+
+    return {
+      accent, screen:s, nav, adminNav, show, showSidebar: s!=='onboarding',
+      comments: this.comments,
+      materials: this.materials, criteria: this.criteria,
+      reviewComments: this.reviewComments,
+      portfolio: this.portfolio, students: this.students,
+      queueItems: this.queueItems.map(q => ({...q, bd: q.sel?'rgba(232,131,90,0.4)':'rgba(255,255,255,0.07)', bg: q.sel?'rgba(232,131,90,0.05)':'#0F0F0F'})),
+      m3lessons: this.m3lessons.map(l => ({...l, bd: l.sel?'rgba(232,131,90,0.4)':'rgba(255,255,255,0.06)', bg: l.sel?'rgba(232,131,90,0.05)':'transparent'})),
+      scoreRows: this.gradeRows.map(g => ({...g, score: Math.round(g.v/10)})),
+      goQueue: this.go('queue'), goBuilder: this.go('builder'),
+      heatmap: (this._heat || (this._heat = Array.from({length:60}, () => {
+        const lv = Math.random(); const bg = lv<0.4 ? 'rgba(255,255,255,0.05)' : lv<0.65 ? 'rgba(232,131,90,0.3)' : lv<0.85 ? 'rgba(232,131,90,0.6)' : (accent||'#E8835A');
+        return { bg };
+      }))),
+      chatMessages: this.chatMessages.map(m => m.from==='me'
+        ? {...m, me:true,  align:'flex-end',   bg:'#F4F2EE', color:'#0B0B0B', tc:'rgba(11,11,11,0.45)', radius:'14px 14px 4px 14px'}
+        : {...m, me:false, align:'flex-start', bg:'#161616', color:'#EDEAE4', tc:'rgba(244,242,238,0.35)', radius:'14px 14px 14px 4px'}),
+      gradeRows: this.gradeRows.map(g => ({...g, w: g.v + '%', c: g.v>=80 ? '#8FA98C' : (g.v>=70 ? accent : '#C98B6B')})),
+      checklist: this.checklist.map(c => c.done
+        ? {...c, mark:'✓', bd:accent, bg:accent, color:'rgba(244,242,238,0.4)', op:0.7}
+        : {...c, mark:'', bd:'rgba(255,255,255,0.16)', bg:'transparent', color:'rgba(244,242,238,0.78)', op:1}),
+      modules: modulesView,
+      startCourse: this.go('dashboard'),
+      goCourse: this.go('course'), goLesson: this.go('lesson'), goHomework: this.go('homework'),
+      goReview: this.go('review'), goPortfolio: this.go('portfolio'), goProfile: this.go('profile'),
+    };
+  }
+}
+</script>
+</body>
+</html>
