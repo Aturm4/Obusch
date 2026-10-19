@@ -45,3 +45,13 @@ Open `http://localhost:3000`. Register the mentor first, then create student acc
 Deployment notes are available in [DEPLOY.md](DEPLOY.md).
 
 
+
+## Работа с изменениями и безопасность
+
+Ветки задач, проверки CI, локальный Gitleaks и правила работы с секретами описаны в [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Status
+
+Learning-platform prototype. Validate authentication, persistence, upload storage and deployment configuration before using it with real students.
+
+![Mentor overview](design_handoff_learning_platform/screens/10-mentor-overview.png)
