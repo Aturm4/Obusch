@@ -16,6 +16,8 @@ services:
         generateValue: true       # Render сам сгенерит секрет
       - key: DATA_DIR
         value: /data
+      - key: MENTOR_INVITE_TOKEN
+        generateValue: true
     disk:
       name: club-data
       mountPath: /data            # сюда сохраняются аккаунты, ДЗ, переписка, загруженные файлы
