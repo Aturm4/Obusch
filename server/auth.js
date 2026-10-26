@@ -2,6 +2,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const db = require('./db');
+const { timingSafeEqual } = require('crypto');
 
 const router = express.Router();
 
@@ -37,12 +38,19 @@ function requireMentor(req, res, next) {
 
 /* POST /api/auth/register */
 router.post('/register', (req, res) => {
-  const { name, email, password, role } = req.body || {};
+  const { name, email, password, role, mentorInvite } = req.body || {};
   if (!name || !email || !password) return res.status(400).json({ error: 'Заполните имя, e-mail и пароль' });
   if (String(password).length < 6) return res.status(400).json({ error: 'Пароль минимум 6 символов' });
   if (db.users.byEmail(email)) return res.status(409).json({ error: 'Пользователь с таким e-mail уже есть' });
 
   const r = role === 'mentor' ? 'mentor' : 'student';
+  if (r === 'mentor') {
+    const expected = Buffer.from(process.env.MENTOR_INVITE_TOKEN || '');
+    const supplied = Buffer.from(typeof mentorInvite === 'string' ? mentorInvite : '');
+    if (!expected.length || expected.length !== supplied.length || !timingSafeEqual(expected, supplied)) {
+      return res.status(403).json({ error: 'Для роли наставника нужен действующий код приглашения' });
+    }
+  }
   const meta = db.meta.get();
   const mentor = db.users.mentor();
   const user = {

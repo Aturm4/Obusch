@@ -9,6 +9,7 @@ const db = require('./server/db');
 const { router: authRouter, requireAuth } = require('./server/auth');
 const apiRouter = require('./server/routes');
 const { initials } = require('./server/auth');
+const { download, canAccessUpload } = require('./server/uploads');
 
 const app = express();
 const server = http.createServer(app);
@@ -41,8 +42,8 @@ app.use('/api/auth', authRouter);
 app.use('/api', apiRouter);
 
 /* ---------- Статика (без кэширования, чтобы браузер всегда брал свежие HTML/CSS/JS) ---------- */
-const UPLOAD_DIR = process.env.DATA_DIR ? path.join(process.env.DATA_DIR, 'uploads') : path.join(__dirname, 'uploads');
-app.use('/uploads', express.static(UPLOAD_DIR));
+app.get('/uploads/:name', requireAuth, download);
+app.use('/uploads', requireAuth, (_req, res) => res.sendStatus(404));
 app.use(express.static(path.join(__dirname, 'public'), {
   etag: false,
   lastModified: false,
@@ -111,6 +112,10 @@ io.on('connection', (socket) => {
       meta: String(payload.file.meta || '').slice(0, 80),
       url: typeof payload.file.url === 'string' ? payload.file.url : null
     } : null;
+    if (file && !canAccessUpload(user, file.url)) {
+      socket.emit('chat:error', { error: 'Нет доступа к этому вложению' });
+      return;
+    }
     if (!text && !file) return;
     const studentId = user.role === 'student' ? user.id : (payload.studentId);
     if (!studentId) return;
@@ -131,6 +136,12 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {});
 });
 
+app.use((error, req, res, next) => {
+  if (res.headersSent) return next(error);
+  const status = error.status || 500;
+  res.status(status).json({ error: status < 500 ? error.message : 'Внутренняя ошибка сервера' });
+});
+
 server.listen(PORT, () => {
   const mentorExists = db.users.mentor();
   console.log('');
@@ -141,7 +152,7 @@ server.listen(PORT, () => {
     console.log('  Наставник потока: ' + mentorExists.name + '. Входите на сайте.');
   } else {
     console.log('  Аккаунтов ещё нет. На сайте нажмите «Зарегистрироваться».');
-    console.log('  Сначала — НАСТАВНИК (роль «Наставник»), потом ученик (роль «Студент»).');
+    console.log('  Наставник регистрируется с кодом приглашения, заданным владельцем сервера.');
   }
   console.log('');
 });

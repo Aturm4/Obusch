@@ -1,24 +1,13 @@
 /* ===== REST API платформы ===== */
 const express = require('express');
-const path = require('path');
-const fs = require('fs');
-const multer = require('multer');
 const db = require('./db');
 const { requireAuth, requireMentor, publicUser, initials } = require('./auth');
+const { uploadSingle, removeUnreferenced } = require('./uploads');
+const { validateReview } = require('./review');
 
 const router = express.Router();
 
 /* ---------- Загрузка файлов (ДЗ) ---------- */
-const UPLOAD_DIR = process.env.DATA_DIR ? path.join(process.env.DATA_DIR, 'uploads') : path.join(__dirname, '..', 'uploads');
-try { fs.mkdirSync(UPLOAD_DIR, { recursive: true }); } catch (e) { /* есть */ }
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-  filename: (req, file, cb) => {
-    const safe = Buffer.from(file.originalname, 'latin1').toString('utf8').replace(/[^\w.\-а-яё]/gi, '_');
-    cb(null, Date.now() + '_' + safe);
-  }
-});
-const upload = multer({ storage, limits: { fileSize: 25 * 1024 * 1024 } });
 
 function fileTypeBadge(name) {
   const ext = (name.split('.').pop() || '').toLowerCase();
@@ -48,7 +37,16 @@ function publishedLessonsAll() {
 }
 function lessonAvailable(l) {
   const m = db.modules.byId(l.moduleId);
-  return !!m && (m.status === 'active' || m.status === 'done');
+  return !!m && m.published !== false && (m.status === 'active' || m.status === 'done');
+}
+function canReadLesson(user, lesson) {
+  return !!lesson && (user.role === 'mentor' || (lesson.status === 'Опубликован' && lessonAvailable(lesson)));
+}
+function canReadHomework(user, homework) {
+  if (!homework) return false;
+  if (user.role === 'mentor') return true;
+  // Homework belongs to the module; its optional lesson link is not a publication policy.
+  return lessonAvailable({ moduleId: homework.moduleId });
 }
 function availableSequence() { return publishedLessonsAll().filter(lessonAvailable); }
 function completedMap(user) { return user.completedLessons || {}; }
@@ -65,7 +63,7 @@ function lessonsDoneCount(user) {
 function currentLessonFor(user) {
   const seq = availableSequence();
   const cl = completedMap(user);
-  return seq.find(l => !cl[l.id]) || seq[seq.length - 1] || db.lessons.all().find(l => l.body) || db.lessons.all()[0] || null;
+  return seq.find(l => !cl[l.id]) || seq[seq.length - 1] || null;
 }
 function nextLessonIdAfter(id) {
   const seq = availableSequence();
@@ -139,7 +137,7 @@ router.get('/course', requireAuth, (req, res) => {
 router.get('/lesson/:id', requireAuth, (req, res) => {
   db.modulesMut.cleanupOrphans(); db.modulesMut.ensureEntry();
   let l = req.params.id === 'current' ? currentLessonFor(req.user) : db.lessons.byId(req.params.id);
-  if (!l) return res.status(404).json({ error: 'Урок не найден' });
+  if (!canReadLesson(req.user, l)) return res.status(404).json({ error: 'Урок не найден' });
   const mentor = db.users.byId(req.user.mentorId || db.raw.meta.mentorId) || db.users.mentor();
   const cl = completedMap(req.user);
   const userChecklist = req.user.checklist || {};
@@ -164,7 +162,7 @@ router.get('/lesson/:id', requireAuth, (req, res) => {
 /* POST /api/lesson/:id/complete  { done } — отметить урок пройденным */
 router.post('/lesson/:id/complete', requireAuth, (req, res) => {
   const l = db.lessons.byId(req.params.id);
-  if (!l) return res.status(404).json({ error: 'Урок не найден' });
+  if (!canReadLesson(req.user, l)) return res.status(404).json({ error: 'Урок не найден' });
   if (!req.user.completedLessons) req.user.completedLessons = {};
   const markDone = !(req.body && req.body.done === false);
   if (markDone) req.user.completedLessons[l.id] = true;
@@ -177,6 +175,7 @@ router.post('/lesson/:id/complete', requireAuth, (req, res) => {
 
 /* POST /api/lesson/:lessonId/checklist  { itemId, done } */
 router.post('/lesson/:lessonId/checklist', requireAuth, (req, res) => {
+  if (!canReadLesson(req.user, db.lessons.byId(req.params.lessonId))) return res.status(404).json({ error: 'Урок не найден' });
   const { itemId, done } = req.body || {};
   const item = db.checklist.byLesson(req.params.lessonId).find(c => c.id === itemId);
   if (!item) return res.status(404).json({ error: 'Пункт не найден' });
@@ -240,6 +239,7 @@ router.get('/homework/:id', requireAuth, (req, res) => {
     hw = active ? db.homeworks.byModule(active.id) : null;   // только домашка активного модуля
   } else hw = db.homeworks.byId(req.params.id);
   if (!hw) return res.json({ homework: null });
+  if (!canReadHomework(req.user, hw)) return res.status(404).json({ error: 'ДЗ не найдено' });
   const mentor = db.users.byId(hw.mentorId) || db.users.byId(req.user.mentorId) || db.users.mentor();
   const sub = db.submissions.forHomeworkStudent(hw.id, req.user.id);
   res.json({
@@ -251,20 +251,25 @@ router.get('/homework/:id', requireAuth, (req, res) => {
 });
 
 /* POST /api/homework/:id/submit  (файл) */
-router.post('/homework/:id/submit', requireAuth, upload.single('file'), (req, res) => {
+router.post('/homework/:id/submit', requireAuth, (req, res, next) => {
   if (req.user.role !== 'student') return res.status(403).json({ error: 'Домашку отправляет ученик из своего кабинета' });
   const hw = db.homeworks.byId(req.params.id);
-  if (!hw) return res.status(404).json({ error: 'ДЗ не найдено' });
+  if (!canReadHomework(req.user, hw)) return res.status(404).json({ error: 'ДЗ не найдено' });
+  next();
+}, uploadSingle, (req, res) => {
+  const hw = db.homeworks.byId(req.params.id);
   if (!req.file) return res.status(400).json({ error: 'Файл не приложен' });
 
   const existing = db.submissions.forHomeworkStudent(hw.id, req.user.id);
   const sub = existing || { id: db.uid('sub'), homeworkId: hw.id, studentId: req.user.id };
+  const previousUrl = sub.file && sub.file.url;
   sub.file = { name: Buffer.from(req.file.originalname, 'latin1').toString('utf8'), size: humanSize(req.file.size), url: '/uploads/' + req.file.filename };
   sub.status = 'submitted';
   sub.kind = existing && existing.review ? 'Повторно' : 'Новая';
   sub.submittedAt = Date.now();
   sub.submittedLabel = 'только что';
   db.submissions.upsert(sub);
+  removeUnreferenced(previousUrl);
   res.json({ ok: true, submission: { id: sub.id, file: sub.file, status: sub.status, submittedLabel: sub.submittedLabel } });
 });
 
@@ -306,6 +311,7 @@ router.post('/portfolio', requireAuth, (req, res) => {
 router.get('/material/:id/download', requireAuth, (req, res) => {
   const m = db.materials.byId(req.params.id);
   if (!m) return res.status(404).json({ error: 'Материал не найден' });
+  if (!canReadLesson(req.user, db.lessons.byId(m.lessonId))) return res.status(404).json({ error: 'Материал не найден' });
   var ext = m.type === 'PDF' ? 'pdf' : m.type === 'URL' ? 'txt' : 'fig';
   var content = '# ' + m.name + '\n\nУчебный материал курса UI/UX Design — поток 7.\nТип: ' + m.type + '\n' + (m.meta || '') + '\n\n(демо-файл платформы)';
   res.setHeader('Content-Type', 'application/octet-stream');
@@ -314,7 +320,7 @@ router.get('/material/:id/download', requireAuth, (req, res) => {
 });
 
 /* ===================== ВЛОЖЕНИЕ В ЧАТ ===================== */
-router.post('/chat/upload', requireAuth, upload.single('file'), (req, res) => {
+router.post('/chat/upload', requireAuth, uploadSingle, (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Файл не приложен' });
   const name = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
   res.json({ file: { name: name, meta: fileTypeBadge(name).type + ' · ' + humanSize(req.file.size), url: '/uploads/' + req.file.filename } });
@@ -440,8 +446,11 @@ router.get('/admin/submission/:id', requireAuth, requireMentor, (req, res) => {
 router.post('/admin/submission/:id/review', requireAuth, requireMentor, (req, res) => {
   const s = db.submissions.byId(req.params.id);
   if (!s) return res.status(404).json({ error: 'Работа не найдена' });
-  const { scores, verdict, verdictText, comments } = req.body || {};
   const hw = db.homeworks.byId(s.homeworkId);
+  let values;
+  try { values = validateReview(req.body || {}, hw, s.review); }
+  catch (error) { return res.status(400).json({ error: error.message }); }
+  const { scores, verdict, verdictText, comments } = values;
 
   // итоговый балл = взвешенная сумма (0..10)
   let total = 0;

@@ -15,6 +15,8 @@
   function $(id) { return document.getElementById(id); }
   function esc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function noop() {}
+  function safeReviewColor(v) { return typeof v === 'string' && /^(?:#[0-9a-f]{3,8}|rgba?\([\d.,%\s]+\))$/i.test(v) ? v : '#8FA98C'; }
+  function safeReviewCoordinate(v) { return typeof v === 'string' && /^(?:\d+(?:\.\d+)?)(?:%|px)$/.test(v) ? v : '50%'; }
   function fileBadge(name) {
     var ext = (String(name || '').split('.').pop() || '').toLowerCase();
     if (ext === 'fig') return { t: 'FIG', c: '#E8835A' };
@@ -86,6 +88,7 @@
     $('auth-sub').textContent = reg ? 'Личное пространство потока 7' : 'Войдите в личное пространство потока 7';
     $('auth-name-row').style.display = reg ? 'flex' : 'none';
     $('auth-role-row').style.display = reg ? 'flex' : 'none';
+    $('auth-invite-row').style.display = 'none';
     $('auth-submit').textContent = reg ? 'Зарегистрироваться' : 'Войти';
     $('auth-switch-text').textContent = reg ? 'Уже есть аккаунт?' : 'Ещё нет аккаунта?';
     $('auth-switch').textContent = reg ? 'Войти →' : 'Зарегистрироваться →';
@@ -111,7 +114,7 @@
     if (authMode === 'register') {
       var name = $('auth-name').value.trim();
       if (!name) { btn.disabled = false; btn.style.opacity = '1'; return authError('Укажите имя'); }
-      p = api('/auth/register', { method: 'POST', body: { name: name, email: email, password: password, role: authRole } });
+      p = api('/auth/register', { method: 'POST', body: { name: name, email: email, password: password, role: authRole, mentorInvite: $('auth-mentor-invite').value } });
     } else {
       p = api('/auth/login', { method: 'POST', body: { email: email, password: password } });
     }
@@ -581,12 +584,14 @@
       $('review-grade-sub').textContent = accepted ? 'работа принята' : 'после доработки → финальная';
       $('review-caption').textContent = '';
       $('review-verdict-fulltext').textContent = rev.verdictText || '';
-      var comments = rev.comments || [];
+      var comments = Array.isArray(rev.comments) ? rev.comments.filter(function (c) { return c && typeof c === 'object'; }).map(function (c) {
+        return { n: c.n, top: safeReviewCoordinate(c.top), left: safeReviewCoordinate(c.left), sc: safeReviewColor(c.sc), svBg: safeReviewColor(c.svBg), tag: c.tag, sev: c.sev, text: c.text };
+      }) : [];
       $('review-comments-label').textContent = 'ЗАМЕЧАНИЯ ПО МАКЕТУ · ' + comments.length;
       $('review-pins').innerHTML = comments.map(function (p) {
-        return '<div style="position:absolute; top:' + p.top + '; left:' + p.left + '; transform:translate(-50%,-50%); width:26px; height:26px; border-radius:50%; background:' + p.sc + '; color:#0B0B0B; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; box-shadow:0 0 0 4px rgba(11,11,11,0.6); cursor:pointer">' + p.n + '</div>';
+        return '<div style="position:absolute; top:' + p.top + '; left:' + p.left + '; transform:translate(-50%,-50%); width:26px; height:26px; border-radius:50%; background:' + p.sc + '; color:#0B0B0B; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; box-shadow:0 0 0 4px rgba(11,11,11,0.6); cursor:pointer">' + esc(p.n) + '</div>';
       }).join('');
-      $('review-grades').innerHTML = (rev.scores || []).map(function (g) {
+      $('review-grades').innerHTML = (Array.isArray(rev.scores) ? rev.scores : []).filter(function (g) { return g && typeof g.v === 'number' && isFinite(g.v) && g.v >= 0 && g.v <= 100; }).map(function (g) {
         var w = g.v + '%', c = gradeColor(g.v);
         return '<div style="display:flex; align-items:center; gap:14px"><span style="flex:none; width:170px; font-size:12.5px; color:rgba(244,242,238,0.55)">' + esc(g.t) + '</span>' +
           '<span style="flex:1; height:5px; border-radius:3px; background:rgba(255,255,255,0.07); position:relative; overflow:hidden"><span style="position:absolute; left:0; top:0; bottom:0; width:' + w + '; background:' + c + '; border-radius:3px"></span></span>' +
@@ -594,7 +599,7 @@
       }).join('');
       box.innerHTML = comments.length ? comments.map(function (c) {
         return '<div style="border:1px solid rgba(255,255,255,0.07); border-radius:13px; background:#0F0F0F; padding:16px 18px">' +
-          '<div style="display:flex; align-items:center; gap:10px; margin-bottom:9px"><span style="flex:none; width:22px; height:22px; border-radius:50%; background:' + c.sc + '; color:#0B0B0B; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700">' + c.n + '</span>' +
+          '<div style="display:flex; align-items:center; gap:10px; margin-bottom:9px"><span style="flex:none; width:22px; height:22px; border-radius:50%; background:' + c.sc + '; color:#0B0B0B; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700">' + esc(c.n) + '</span>' +
           '<span style="font-size:13px; font-weight:600; color:#F4F2EE">' + esc(c.tag) + '</span><span style="flex:1"></span>' +
           '<span style="font-size:11px; font-weight:500; color:' + c.sc + '; padding:3px 9px; border-radius:100px; background:' + c.svBg + '">' + esc(c.sev) + '</span></div>' +
           '<div style="font-size:13.5px; line-height:1.6; color:rgba(244,242,238,0.62)">' + esc(c.text) + '</div></div>';
@@ -1116,6 +1121,8 @@
 
   function selectAuthRole(el) {
     authRole = el.getAttribute('data-role');
+    $('auth-invite-row').style.display = authMode === 'register' && authRole === 'mentor' ? 'block' : 'none';
+    $('auth-mentor-invite').value = '';
     document.querySelectorAll('.auth-role').forEach(function (b) {
       var on = b === el;
       b.classList.toggle('is-on', on);
