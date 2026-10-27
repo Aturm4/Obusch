@@ -5,7 +5,6 @@ const multer = require('multer');
 const db = require('./db');
 
 const directory = process.env.DATA_DIR ? path.join(process.env.DATA_DIR, 'uploads') : path.join(__dirname, '..', 'uploads');
-fs.mkdirSync(directory, { recursive: true });
 const mib = 1024 * 1024;
 function quota(name, fallback) {
   const value = Number(process.env[name] || fallback);
@@ -44,6 +43,7 @@ const storage = multer.diskStorage({
 function uploadSingle(req, res, next) {
   let reserved;
   try {
+    fs.mkdirSync(directory, { recursive: true });
     const used = usage(req.user.id);
     reserved = Math.min(25 * mib, userQuota - used.own, totalQuota - used.total);
     if (reserved < 1 || used.count >= 2048 || used.ownCount >= 200) throw failure('Лимит хранилища вложений исчерпан', 413);
